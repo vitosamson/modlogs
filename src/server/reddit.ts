@@ -105,7 +105,7 @@ export class Reddit {
 
   public async getSubredditModLogs(subredditName: string, opts: { after?: string; before?: string; }): Promise<ModAction[]> {
     try {
-      return await this.r.getSubreddit(name).getModerationLog(opts).fetchAll();
+      return await this.r.getSubreddit(subredditName).getModerationLog(opts).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];

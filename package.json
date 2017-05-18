@@ -46,9 +46,9 @@
   "scripts": {
     "ui:dev": "cd src/client && NODE_ENV=development webpack-dev-server --port=4241 --host=0.0.0.0",
     "ui:build": "cd src/client && NODE_ENV=production webpack",
-    "server:build": "cd src/server && tsc && cp index.tpl.html ../../build/server/server",
+    "server:build": "cd src/server && tsc && cp index.tpl.html ../../build/server",
     "server:build:watch": "cd src/server && tsc --watch",
-    "server:run": "NODE_ENV=production node build/server/server",
+    "server:run": "node build/server/server",
     "server:run:watch": "nodemon -w build -w src/server/index.tpl.html -x 'NODE_ENV=development node build/server/server'",
     "lint": "tslint -e \"src/**/*.d.ts\" src/**/*.ts"
   },

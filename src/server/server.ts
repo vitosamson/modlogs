@@ -1,4 +1,5 @@
 import { resolve } from 'path';
+import { inspect } from 'util';
 import * as express from 'express';
 import * as expressWinston from 'express-winston';
 import * as compress from 'compression';
@@ -18,6 +19,7 @@ apiRouter.get('/subreddits', async (req, res) => {
   try {
     res.json(await subreddits());
   } catch (err) {
+    logger.error(inspect(err));
     res.json([]);
   }
 });
@@ -26,6 +28,7 @@ apiRouter.get('/r/:subreddit/logs', async (req, res) => {
   try {
     res.json(await logs(req.params.subreddit, req.query));
   } catch (err) {
+    logger.error(inspect(err));
     res.json(noLogs);
   }
 });
@@ -34,6 +37,7 @@ apiRouter.get('/r/:subreddit/logs/:redditLogId', async (req, res) => {
   try {
     res.json(await log(req.params.subreddit, req.params.redditLogId));
   } catch (err) {
+    logger.error(inspect(err));
     res.status(404).send(err.message);
   }
 });

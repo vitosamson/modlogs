@@ -44,7 +44,7 @@ export async function getSubredditConfig(subredditName: string): Promise<ISubred
   const collection = await getMySubredditsCollection();
   const subreddit = await collection.findOne({ name: new RegExp(subredditName, 'i') }) as ISubredditWithConfig;
 
-  if (!subreddit) return defaultSubredditModlogConfig;
+  if (!subreddit || !subreddit.modlogConfig) return defaultSubredditModlogConfig;
 
   const config = subreddit.modlogConfig;
   configArrayItems.map(thing => {
