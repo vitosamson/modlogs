@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "allowJs": true,
+    "outDir": "../../build/server",
+    "rootDirs": [
+      "../client"
+    ],
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "experimentalDecorators": true,
+    "noUnusedLocals": true
+  },
+  "include": [
+    "./index.tsx",
+    "./jobs/**/*",
+    "./queue/**/*",
+    "../types/**/*"
+  ]
+}

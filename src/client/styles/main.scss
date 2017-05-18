@@ -1,0 +1,56 @@
+@import '~react-select/dist/react-select.min.css';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/mixins';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/normalize';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/scaffolding';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/type';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/grid';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/forms';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/buttons';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/dropdowns';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/input-groups';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/panels';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/utilities';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities';
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Ubuntu', sans-serif;
+  background: rgb(245, 245, 245);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  align-items: stretch;
+}
+
+button:focus {
+  outline: 0 !important;
+}
+
+.form-group {
+  margin: 0;
+}
+
+.panel-heading {
+  background: #fff !important;
+  border-bottom-width: 2px !important;
+}
+
+.panel-footer {
+  background: #fff !important;
+}
+
+.btn,
+.form-control,
+.panel {
+  border-radius: 2px;
+}
+
+.form-control:focus {
+  border-color: #aaa;
+  box-shadow: none;
+}

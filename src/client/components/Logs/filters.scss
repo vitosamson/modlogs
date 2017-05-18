@@ -1,0 +1,59 @@
+.log-filters {
+  .panel-title {
+    display: inline-block;
+  }
+
+  .clear-filters {
+    float: right;
+    cursor: pointer;
+    color: #777;
+
+    &:hover {
+      color: #444;
+    }
+  }
+
+  .limit-selector,
+  .type-selector {
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .limit-selector {
+    margin-right: 10px;
+  }
+
+  .toggle-actions {
+    margin-top: 15px;
+    margin-bottom: 0;
+    cursor: pointer;
+
+    &.is-open {
+      margin-bottom: 10px;
+    }
+
+    i {
+      margin-left: 5px;
+    }
+  }
+
+  .action-type {
+    font-weight: normal;
+    display: inline-block;
+    margin-right: 10px;
+
+    &.show-all {
+      display: block;
+    }
+
+    input {
+      margin-right: 5px;
+    }
+  }
+
+  .input-group {
+    button {
+      height: 34px; // normalize to height of adjacent input
+    }
+  }
+}

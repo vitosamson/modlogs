@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "experimentalDecorators": true,
+    "noUnusedLocals": true
+  }
+}

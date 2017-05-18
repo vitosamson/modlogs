@@ -1,0 +1,65 @@
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
+
+.app-container header {
+  width: 100%;
+  background: #3b5765;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .name {
+    font-size: 1.5em;
+    flex: 1;
+    padding-left: 20px;
+    margin: 0;
+    color: rgb(245, 245, 245);
+
+    @media (max-width: $screen-xs-max) {
+      padding-left: 10px;
+      font-size: 1.2em;
+    }
+  }
+
+  .subreddit-selector {
+    flex: 1;
+    max-width: 400px;
+    z-index: 10;
+    margin-bottom: 1px;
+
+    .Select-control {
+      border-radius: 2px;
+    }
+
+    @media (max-width: $screen-xs-max) {
+      flex: 2;
+      padding-right: 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .Select-value,
+    .Select-placeholder {
+      font-size: 1.1em;
+    }
+  }
+
+  .links {
+    padding: 10px;
+    float: right;
+    list-style: none;
+    font-size: 1.2em;
+    margin: 0;
+    flex: 1;
+    text-align: right;
+    padding-right: 20px;
+
+    a {
+      color: rgb(245, 245, 245);
+    }
+
+    @media (max-width: $screen-xs-max) {
+      display: none; // TODO
+    }
+  }
+}

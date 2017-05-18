@@ -1,0 +1,42 @@
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
+
+.side-bar {
+  .panel {
+    margin-bottom: 10px;
+  }
+
+  .log-navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    button {
+      display: block;
+      width: 100%;
+
+      &:first-child {
+        margin-right: 5px;
+      }
+
+      &:last-child {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  // don't sticky the sidebar on mobile, it should just collapse to below the logs
+  @media (max-width: $screen-sm-max) {
+    .sticky {
+      position: relative !important;
+      transform: none !important;
+      width: auto !important;
+      left: 0 !important;
+      top: 0 !important;
+    }
+
+    // :-\
+    & > div > div {
+      padding: 0 !important;
+    }
+  }
+}
