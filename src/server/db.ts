@@ -1,3 +1,4 @@
+import { inspect } from 'util';
 import { MongoClient, Db } from 'mongodb';
 import getLogger from './logger';
 import { ISubredditModlogConfig } from './models/subreddit';
@@ -13,9 +14,16 @@ let db: Db;
 
 export async function connectDb(): Promise<Db> {
   if (!db) {
-    db = await MongoClient.connect(mongoUri);
-    logger.info('connected to database at', mongoUri);
+    try {
+      db = await MongoClient.connect(mongoUri);
+    } catch (err) {
+      logger.error('error connecting to database');
+      logger.error(inspect(err));
+      process.exit(1);
+    }
+    logger.info('connected to database');
   }
+
   return db;
 }
 

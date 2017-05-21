@@ -5,6 +5,7 @@ import * as expressWinston from 'express-winston';
 import * as compress from 'compression';
 
 import getLogger from './logger';
+import { connectDb } from './db';
 import renderUi from './routeHandlers/ui';
 import subreddits from './routeHandlers/api/subreddits';
 import logs, { noLogs } from './routeHandlers/api/logs';
@@ -58,6 +59,8 @@ app.use(expressWinston.errorLogger({
   winstonInstance: logger,
 }));
 
-app.listen(port, () => {
-  logger.info(`listening at http://localhost:${port}`);
+connectDb().then(() => {
+  app.listen(port, () => {
+    logger.info(`listening at http://localhost:${port}`);
+  });
 });
