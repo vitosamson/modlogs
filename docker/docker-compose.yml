@@ -1,0 +1,50 @@
+version: "3"
+services:
+  # web:
+  #   image: vitosamson/modlogs:web
+  #   volumes:
+  #     - /app
+  #   ports:
+  #     - "9072:80"
+  #   environment:
+  #     APP_ID:
+  #     APP_SECRET:
+  #     REDDIT_USER:
+  #     REDDIT_PASSWORD:
+  #     USER_AGENT:
+  #     MONGODB_URI: mongodb://mongo/modlogs
+  #     PORT: 80
+  #   links:
+  #     - mongo
+
+  worker:
+    image: vitosamson/modlogs:worker
+    volumes:
+      - /app
+    environment:
+      APP_ID:
+      APP_SECRET:
+      REDDIT_USER:
+      REDDIT_PASSWORD:
+      USER_AGENT:
+      MONGODB_URI: mongodb://mongo/modlogs
+      REDIS_URL: redis://redis:6379
+    links:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - /data:/data
+      - /data/db:/data/db
+      - /data/configdb:/data/configdb
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - /data:/data

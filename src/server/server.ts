@@ -14,7 +14,7 @@ import log from './routeHandlers/api/log';
 const logger = getLogger('server');
 const app = express();
 const apiRouter = express.Router();
-const port = 4245;
+const port = process.env.PORT || 4245;
 
 apiRouter.get('/subreddits', async (req, res) => {
   try {
@@ -49,8 +49,7 @@ app.use(expressWinston.logger({
 }));
 
 app.use(compress());
-app.use(express.static(resolve('build/assets')));
-
+app.use('/assets', express.static(resolve('build/assets')));
 app.get('/favicon.ico', (req, res) => res.status(200).send());
 app.use('/api', apiRouter);
 app.use(renderUi);
