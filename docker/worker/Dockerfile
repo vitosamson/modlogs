@@ -1,8 +1,9 @@
 FROM node:7.10.0-alpine
 
-# RUN apt-get update && apt-get install -y cron vim-tiny rsyslog bash
 RUN apk add --no-cache vim rsyslog bash
-ADD docker/worker/crontab /etc/cron.d/jobs
+ADD docker/worker/crontab /tmp/crontab
+RUN crontab /tmp/crontab && rm /tmp/crontab
+
 RUN mkdir /var/log/jobs
 RUN touch /var/log/jobs/subreddits /var/log/jobs/modlogs /var/log/jobs/messages /var/log/cron
 
