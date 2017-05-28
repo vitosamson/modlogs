@@ -4,7 +4,7 @@ FROM node:7.10.0-alpine
 RUN apk add --no-cache vim rsyslog bash
 ADD docker/worker/crontab /etc/cron.d/jobs
 RUN mkdir /var/log/jobs
-RUN touch /var/log/jobs/subreddits /var/log/jobs/modlogs /var/log/jobs/messages
+RUN touch /var/log/jobs/subreddits /var/log/jobs/modlogs /var/log/jobs/messages /var/log/cron
 
 ENV SHELL /bin/bash
 ENV EDITOR /usr/bin/vim
