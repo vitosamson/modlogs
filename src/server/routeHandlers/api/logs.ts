@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 import reddit from '../../reddit';
-import { createMongoQueryFromConfig, createMongoProjectionFromConfig } from '../../db';
+import { createMongoQueryFromConfig, createMongoProjectionFromConfig, ID_ASCENDING, ID_DESCENDING } from '../../db';
 import { getSubredditConfig } from '../../models/subreddit';
 import getLogger from '../../logger';
 import { getSubredditLogsCollection, ILog } from '../../models/log';
@@ -34,22 +34,24 @@ export default async function logs(subredditName: string, query: ILogsQuery): Pr
   const limit = Math.min((typeof query.limit === 'string' ? parseInt(query.limit, 10) : query.limit || 25), 100);
   const mongoQuery = createMongoQueryFromConfig(config);
   const projection = createMongoProjectionFromConfig(config);
-  const sort = { _id: 1 };
+  const sort = {
+    _id: ID_DESCENDING,
+  };
 
   if (query.after) {
     const after = await collection.findOne({ redditId: query.after });
     if (after) {
       mongoQuery._id = {
-        $gt: after._id,
+        $lt: after._id,
       };
     }
   } else if (query.before) {
     const before = await collection.findOne({ redditId: query.before });
     if (before) {
       mongoQuery._id = {
-        $lt: before._id,
+        $gt: before._id,
       };
-      sort._id = -1;
+      sort._id = ID_ASCENDING;
     }
   }
 
@@ -90,12 +92,16 @@ export default async function logs(subredditName: string, query: ILogsQuery): Pr
   const last = logs[logs.length - 1];
 
   const hasAfter = last && await collection.find(Object.assign({}, mongoQuery, {
-    _id: { $gt: last._id },
-  })).sort({ _id: -1 }).limit(limit).hasNext();
+    _id: { $lt: last._id },
+  })).sort({
+    _id: ID_ASCENDING,
+  }).limit(limit).hasNext();
 
   const hasBefore = first && await collection.find(Object.assign({}, mongoQuery, {
-    _id: { $lt: first._id },
-  })).sort({ _id: 1 }).limit(limit).hasNext();
+    _id: { $gt: first._id },
+  })).sort({
+    _id: ID_DESCENDING,
+  }).limit(limit).hasNext();
 
   return {
     logs,

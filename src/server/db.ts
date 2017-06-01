@@ -12,6 +12,9 @@ const logger = getLogger('DB');
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/reddit-mod-log';
 let db: Db;
 
+export const ID_ASCENDING = 1;
+export const ID_DESCENDING = -1;
+
 export async function connectDb(): Promise<Db> {
   if (!db) {
     try {

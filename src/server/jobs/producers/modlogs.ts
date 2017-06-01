@@ -6,7 +6,7 @@
 
 import { inspect } from 'util';
 import { addJob, getQueuedJobsByType } from '../queue';
-import reddit from '../../reddit';
+import { getMySubreddits } from '../../models/subreddit';
 import getLogger from '../../logger';
 
 const logger = getLogger('ModlogQueueProducer');
@@ -19,7 +19,7 @@ export interface FetchModlogsJobData {
 export const run = async () => {
   logger.info('fetching modlogs');
 
-  const mySubreddits = (await reddit.getModdedSubreddits()).map(sub => sub.name);
+  const mySubreddits = (await getMySubreddits()).map(sub => sub.name);
   const queuedJobs = await getQueuedJobsByType(jobType);
 
   try {

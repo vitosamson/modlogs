@@ -4,6 +4,7 @@ import reddit, { isComment, isSubmission } from '../../reddit';
 import getLogger from '../../logger';
 import { FetchModlogsJobData } from '../producers/modlogs';
 import { ILog, getSubredditLogsCollection } from '../../models/log';
+import { ID_DESCENDING } from '../../db';
 
 const logger = getLogger('ModlogsConsumer');
 export const processLogsJobType = 'processLogs';
@@ -15,7 +16,7 @@ interface ProcessLogsJobData {
 
 export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
   const collection = await getSubredditLogsCollection(subreddit);
-  const last: ILog = (await collection.find().sort({ _id: 1 }).limit(1).toArray())[0];
+  const last: ILog = (await collection.find().sort({ _id: ID_DESCENDING }).limit(1).toArray())[0];
   const before = (last && last.redditId) || undefined;
 
   logger.info('fetching logs for', subreddit);
@@ -25,7 +26,7 @@ export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
       '\t last log is _id: %s, redditId: %s, date: %s',
       last._id,
       last.redditId,
-      new Date(last.timestamp).toLocaleDateString(),
+      new Date(last.timestamp).toLocaleDateString()
     );
   } else {
     logger.info('\t no previous logs, starting from the top (this might take a while)');
@@ -39,7 +40,10 @@ export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
     jobType: processLogsJobType,
     data: {
       subreddit,
-      logs,
+
+      // logs have to be reversed so that when they're added to the db,
+      // the newest log is at the end of the collection
+      logs: logs.reverse(),
     },
   });
 }
