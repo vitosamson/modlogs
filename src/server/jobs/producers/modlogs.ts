@@ -27,6 +27,7 @@ export const run = async () => {
       // avoid adding duplicate jobs
       if (queuedJobs.some(job => job.data.subreddit === subredditName)) {
         logger.info('duplicate %s job for %s', jobType, subredditName);
+        return;
       }
 
       logger.info('adding %s job for %s', jobType, subredditName);
