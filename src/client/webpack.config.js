@@ -27,6 +27,19 @@ if (isDevelopment) {
   plugins.push(new webpack.HotModuleReplacementPlugin());
   plugins.push(new webpack.NamedModulesPlugin());
   plugins.push(new webpack.NoEmitOnErrorsPlugin());
+
+  plugins.push(function() {
+    this.plugin('done', stats => {
+      const chunks = stats.toJson().assetsByChunkName;
+      const appJs = chunks.app.find(c => path.extname(c) === '.js');
+      fs.writeFileSync(
+        path.resolve('../../build/client/index.tpl.html'),
+        htmlTpl
+          .replace('__app_js__', `/${appJs}`)
+          .replace('__webpack_manifest__', '')
+      );
+    });
+  });
 } else {
   plugins.push(new ExtractTextPlugin('app-[contenthash].css'));
   plugins.push(new webpack.HashedModuleIdsPlugin());
@@ -52,13 +65,14 @@ if (isDevelopment) {
       const webpackManifest = fs.readFileSync(
         path.resolve(`../../build/assets/${webpackManifestFilename}`)
       ).toString();
+      const relativeToAssets = chunk => `/assets/${chunk}`;
 
       fs.writeFileSync(
         path.resolve('../../build/client/index.tpl.html'),
         htmlTpl
-          .replace('__app_css__', appCss)
-          .replace('__vendor_js__', vendorJs)
-          .replace('__app_js__', appJs)
+          .replace('__app_css__', relativeToAssets(appCss))
+          .replace('__vendor_js__', relativeToAssets(vendorJs))
+          .replace('__app_js__', relativeToAssets(appJs))
           .replace('__webpack_manifest__', webpackManifest)
       );
     });
