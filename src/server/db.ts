@@ -9,7 +9,7 @@ type IMongoLogQuery = {
 };
 
 const logger = getLogger('DB');
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/reddit-mod-log';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/modlogs';
 let db: Db;
 
 export const ID_ASCENDING = 1;

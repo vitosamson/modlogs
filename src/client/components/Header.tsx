@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Select from './Select';
+import ExternalLink from './ExternalLink';
 import { AppState } from '../store/reducers';
 import { ISubreddit } from '../../server/models/subreddit/type';
 import './header.scss';
@@ -37,7 +38,9 @@ class Header extends React.PureComponent<Props & AppState, null> {
 
         <ul className="links">
           <li>
-            <a href="#">Help</a>
+            <ExternalLink to="https://github.com/vitosamson/modlogs/tree/master/ModeratorInstructions.md">
+              Help
+            </ExternalLink>
           </li>
         </ul>
       </header>

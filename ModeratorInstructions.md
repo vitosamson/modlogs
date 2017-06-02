@@ -1,11 +1,11 @@
-# Public Mod Log - Moderator Instructions
+# Moderator Instructions
 
 As both a reddit user and a moderator of a moderately large subreddit, I believe there are two overarching reasons to publicize the actions that moderators take:
 
  1. From the user's perspective, the transparency provided by these logs will help build trust in the community.
  2. From the moderator's perspective, it will (hopefully) help cut down on the shill/nazi/etc accusations.
 
-Public Mod Log offers moderators some flexibility in what they show in the logs, as well as some report functionality to sweeten the deal.
+Mod Logs offers moderators flexibility in what they show in the logs, as well as some report functionality to sweeten the deal.
 
 ## How to
 
@@ -18,7 +18,7 @@ That's it.
 
 ## Permissions
 
-You can add /u/modlogs as a moderator with no permissions, but if you want to use a custom configuration you'll need to give it the `wiki` permission.
+You can add [/u/modlogs](https://www.reddit.com/user/modlogs) as a moderator with no permissions, but if you want to use a custom configuration you'll need to give it the `wiki` permission.
 
 ## Configuration
 
@@ -107,9 +107,9 @@ The following moderation actions can be used in the `include_actions` and `exclu
 
 ## Running reports
 
-Reddit doesn't currently offer moderators any means to analyze user behavior in their subs. Public Mod Log offers two types of reports.
+Reddit doesn't currently offer moderators any means to analyze user behavior in their subs. Mod Logs offers two types of reports.
 
-In order to run a report, just send a modmail message from the desired subreddit to /u/modlogs with "report" as the subject. In the body of the message, provide the options detailed in the report types below. Options must be provided in YAML format, like the modlog configuration earlier.
+In order to run a report, just send a modmail message from the desired subreddit to [/u/modlogs](https://www.reddit.com/message/compose/?to=modlogs&subject=report&message=type:) with "report" as the subject. In the body of the message, provide the options detailed in the report types below. Options must be provided in YAML format, like the modlog configuration earlier.
 
 **Report requests must be sent via your subreddit's modmail, or the message will be ignored.**
 
