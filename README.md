@@ -55,8 +55,12 @@ Make sure to pass the appropriate environment variables into the docker containe
 | `APP_SECRET` |  | `worker` | the app secret given by reddit for API access |
 | `REDDIT_USER` |  | `worker` | the reddit username to authenticate with |
 | `REDDIT_PASSWORD` |  | `worker` | the reddit password to authenticate with |
+| `USER_AGENT` |  | `worker` | the user agent to send with reddit API calls |
 | `MONGODB_URI` | `mongodb://localhost:modlogs` | `web`, `worker` | the URI of your mongo server |
 | `REDIS_URL` | `redis://localhost` | `worker` | the URI of your redis server |
+| `ANALYTICS_KEY` |  | `web (during ui:build command only)` | the google analytics key |
+| `NODE_ENV` | `production` | `web` |  |
+| `LOG_LEVEL` | `info` |  | `web`, `worker` |  |
 
 ## Processing subreddits, logs, and reports
 

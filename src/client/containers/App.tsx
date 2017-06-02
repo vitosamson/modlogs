@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { fetchSubreddits } from '../store/actions';
 import { LoadPropsArgs, LoadPropsCb } from '../types';
+import { initAnalytics, trackPage } from '../analytics';
 
 interface Params {
   subreddit?: string;
@@ -23,12 +24,18 @@ export default class App extends React.Component<AppProps, null> {
     dispatch(fetchSubreddits()).then(() => cb(null)).catch(cb);
   }
 
+  public componentDidMount() {
+    initAnalytics();
+  }
+
   private changeSubreddit = (subreddit: string) => {
     const { params, router } = this.props;
     if (subreddit === params.subreddit) return;
+    const nextPath = `/r/${subreddit}`;
     router.push({
-      pathname: `/r/${subreddit}`,
+      pathname: nextPath,
     });
+    trackPage(nextPath);
   }
 
   public render() {

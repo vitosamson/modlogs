@@ -11,6 +11,7 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'production'),
+      ANALYTICS_KEY: JSON.stringify(process.env.ANALYTICS_KEY),
     },
   }),
 ];
@@ -41,6 +42,10 @@ if (isDevelopment) {
     });
   });
 } else {
+  if (!process.env.ANALYTICS_KEY) {
+    console.warn('*** no analytics key was provided ***');
+  }
+
   plugins.push(new ExtractTextPlugin('app-[contenthash].css'));
   plugins.push(new webpack.HashedModuleIdsPlugin());
   plugins.push(new webpack.optimize.CommonsChunkPlugin({

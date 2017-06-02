@@ -11,3 +11,9 @@ export interface LoadPropsArgs<ExpectedParams> {
 }
 
 export type LoadPropsCb = (err: Error | null, props?: any) => void;
+
+declare global {
+  interface Window {
+    ga?: (...args: any[]) => void;
+  }
+}
