@@ -1,8 +1,11 @@
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 const isDevelopment = process.env.NODE_ENV === 'development';
+const htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index.tpl.html')).toString();
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -25,16 +28,48 @@ if (isDevelopment) {
   plugins.push(new webpack.NamedModulesPlugin());
   plugins.push(new webpack.NoEmitOnErrorsPlugin());
 } else {
-  plugins.push(new ExtractTextPlugin('style.css'));
+  plugins.push(new ExtractTextPlugin('app-[contenthash].css'));
+  plugins.push(new webpack.HashedModuleIdsPlugin());
+  plugins.push(new webpack.optimize.CommonsChunkPlugin({
+    name: 'vendor',
+    minChunks: m => /node_modules/.test(m.context),
+  }));
+  plugins.push(new webpack.optimize.CommonsChunkPlugin({
+    name: 'manifest',
+  }));
   plugins.push(new UglifyJsPlugin());
+
+  plugins.push(function() {
+    this.plugin('done', stats => {
+      const chunks = stats.toJson().assetsByChunkName;
+      const vendorJs = chunks.vendor;
+      const appJs = chunks.app.find(c => path.extname(c) === '.js');
+      const appCss = chunks.app.find(c => path.extname(c) === '.css');
+      const webpackManifestFilename = chunks.manifest;
+      const webpackManifest = fs.readFileSync(
+        path.resolve(`../../build/assets/${webpackManifestFilename}`)
+      ).toString();
+
+      fs.writeFileSync(
+        path.resolve('../../build/client/index.tpl.html'),
+        htmlTpl
+          .replace('__app_css__', appCss)
+          .replace('__vendor_js__', vendorJs)
+          .replace('__app_js__', appJs)
+          .replace('__webpack_manifest__', webpackManifest)
+      );
+    });
+  });
 }
 
 module.exports = {
   devtool: isDevelopment && 'source-map',
-  entry,
+  entry: {
+    app: entry,
+  },
   output: {
     path: path.resolve('../../build/assets'),
-    filename: 'bundle.js',
+    filename: isDevelopment ? 'bundle.js' : '[name]-[chunkhash].js',
     publicPath: '/',
   },
   resolve: {
@@ -78,5 +113,9 @@ module.exports = {
         },
       },
     },
+  },
+
+  stats: {
+    children: false,
   },
 };

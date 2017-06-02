@@ -20,7 +20,7 @@ import subredditsHandler from './api/subreddits';
 import logsHandler from './api/logs';
 import logHandler from './api/log';
 
-const htmlTpl = readFileSync(resolve(__dirname, '../index.tpl.html')).toString();
+const htmlTpl = readFileSync(resolve(__dirname, '../../client/index.tpl.html')).toString();
 
 interface LoadedProps {
   asyncProps: any;

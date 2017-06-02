@@ -97,7 +97,7 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
         }
 
         { process.env.NODE_ENV === 'development' &&
-          <div className="reddit-id">{ log.redditId }<br/>{ log._id }</div>
+          <div className="reddit-id">{ log.redditId }<br/>{ log._id.toString() }</div>
         }
       </div>
     );
