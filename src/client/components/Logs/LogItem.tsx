@@ -11,10 +11,41 @@ export interface LogItemProps {
   onChangeFilter: (filter: string) => void;
 }
 
-export default class LogItem extends React.PureComponent<LogItemProps, null> {
+interface State {
+  logCreated: string;
+}
+
+export default class LogItem extends React.PureComponent<LogItemProps, State> {
+  public state: State = {
+    logCreated: '',
+  };
+
+  public componentDidMount() {
+    this.updateCreatedString(this.props.log);
+  }
+
+  public componentWillReceiveProps(nextProps: LogItemProps) {
+    if (nextProps.log !== this.props.log) {
+      this.updateCreatedString(nextProps.log);
+    }
+  }
+
+  /**
+   * the server and client may have different timezones, which causes the formatted date to change between
+   * the server-side render and the client render, leading react to do a full re-render because the checksum
+   * no longer matches.
+   * by setting this only when the component actually mounts (on the client), we can avoid that.
+   */
+  private updateCreatedString(log: ILog) {
+    const created = new Date(log.timestamp);
+    this.setState({
+      logCreated: `${created.toLocaleDateString()} @ ${created.toLocaleTimeString()}`,
+    });
+  }
+
   public render() {
     const { log, onChangeFilter } = this.props;
-    const created = new Date(log.timestamp);
+    const { logCreated } = this.state;
 
     return (
       <div className="panel panel-default log-item">
@@ -32,7 +63,7 @@ export default class LogItem extends React.PureComponent<LogItemProps, null> {
           }
 
           <div className="time">
-            { created.toLocaleDateString() } @ { created.toLocaleTimeString() }
+            { logCreated }
           </div>
         </div>
 
