@@ -14,7 +14,7 @@ export default class SubredditInfo extends React.PureComponent<Props, null> {
     const { selectedSubreddit, allSubreddits } = this.props;
 
     const subredditInfo = selectedSubreddit && allSubreddits.find(sub =>
-      sub.nameLowercase === selectedSubreddit.toLowerCase(),
+      sub.nameLowercase === selectedSubreddit.toLowerCase()
     );
 
     if (!subredditInfo) {

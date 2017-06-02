@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import LogItem, { LogItemProps } from './LogItem';
@@ -13,6 +14,15 @@ interface Props extends LogItemProps {
 type LogsProps = Props & RouteComponentProps<any, any>;
 
 class Logs extends React.PureComponent<LogsProps, null> {
+  public componentWillReceiveProps(nextProps: Props) {
+    // scroll to the top of the logs container when we receive new logs
+    if (nextProps.logs !== this.props.logs) {
+      const node = findDOMNode(this);
+      const { top } = node.getBoundingClientRect();
+      if (top < 0) node.scrollIntoView();
+    }
+  }
+
   public render() {
     const { logs, fetching, onChangeFilter } = this.props;
 

@@ -63,7 +63,7 @@ export default class LogFilters extends React.PureComponent<Props, State> {
     onChangeActions(
       currentActions.includes(action) ?
         currentActions.filter(a => a !== action) :
-        currentActions.concat(action),
+        currentActions.concat(action)
     );
   }
 

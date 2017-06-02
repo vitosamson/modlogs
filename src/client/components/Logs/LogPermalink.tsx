@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router';
 import LogItem, { LogItemProps } from './LogItem';
 import { startLoadingBar, stopLoadingBar } from '../../store/actions';
 import { StoreState } from '../../store/reducers';
 import { ILog } from '../../../server/models/log/type';
 import logApi from '../../api/log';
+import './logpermalink.scss';
 
 interface Props extends LogItemProps {
   startLoadingBar: typeof startLoadingBar;
@@ -63,11 +64,22 @@ class LogPermalink extends React.PureComponent<PermalinkProps, State> {
 
   public render() {
     const { fetching, log } = this.state;
+    const { subreddit } = this.props.params;
 
     if (fetching)
       return null;
     else if (log)
-      return <LogItem log={log} onChangeFilter={() => null} />;
+      return (
+        <div className="log-permalink">
+          <LogItem log={log} onChangeFilter={() => null} />
+
+          <div className="view-all">
+            <Link to={`/r/${subreddit}`}>
+              view all logs for { subreddit }
+            </Link>
+          </div>
+        </div>
+      );
     else
       return <h4 className="text-center">Unable to find that log :(</h4>;
   }

@@ -22,7 +22,7 @@ const logger = reduxLogger.createLogger({
 const store = createStore(
   reducers,
   preloadedState,
-  applyMiddleware(thunk, logger),
+  applyMiddleware(thunk, logger)
 );
 
 export default store;

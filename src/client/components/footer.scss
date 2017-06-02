@@ -1,11 +1,9 @@
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
-
-$link-color: #5275b5;
+@import '../styles/variables';
 
 footer {
   margin-top: 40px;
   margin-bottom: 20px;
-  color: #a4a4a4;
   text-align: center;
 
   @media (min-width: $screen-md-min) {
@@ -14,24 +12,14 @@ footer {
     margin-right: auto;
   }
 
-  .no-subreddit {
-    font-size: 1.4em;
-    color: #949494;
-    margin-bottom: 40px;
-
-    @media (max-width: $screen-xs-max) {
-      font-size: 1.2em;
-    }
-  }
-
   .links {
     margin-top: 20px;
 
     a {
-      color: #a4a4a4;
+      color: $link-muted-color;
 
       &:hover {
-        color: $link-color;
+        color: $link-muted-color-hover;
       }
     }
   }

@@ -1,6 +1,11 @@
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
 
-.side-bar {
+.logs {
+  margin-top: 20px;
+  flex: 1;
+}
+
+.sidebar {
   .panel {
     margin-bottom: 10px;
   }
@@ -9,6 +14,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-bottom: 10px;
 
     button {
       display: block;

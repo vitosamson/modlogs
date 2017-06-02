@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Link, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import debounce = require('lodash.debounce');
 import { StickyContainer, Sticky } from 'react-sticky';
 
@@ -156,12 +156,6 @@ class LogsContainer extends React.PureComponent<Props, null> {
     return (
       <div className="logs">
         <div className="container-fluid">
-          <h3 className="current-subreddit">
-            Viewing
-            { viewingPermalink ? ' a log ' : ' logs ' }
-            for <Link to={`/r/${params.subreddit}`}>/r/{ params.subreddit }</Link>
-          </h3>
-
           <StickyContainer className="row">
             <div className="col-md-8">
               <div className="log-item-container">
@@ -172,7 +166,7 @@ class LogsContainer extends React.PureComponent<Props, null> {
               </div>
             </div>
 
-            <div className="col-md-4 side-bar">
+            <div className="col-md-4 sidebar">
               <Sticky>
                 {({ style }: { style: any }) =>
                   <div className="sticky" style={style}>
@@ -189,11 +183,6 @@ class LogsContainer extends React.PureComponent<Props, null> {
                       disableFilters={viewingPermalink}
                     />
 
-                    <SubredditInfo
-                      selectedSubreddit={params.subreddit}
-                      allSubreddits={subreddits}
-                    />
-
                     <div className="log-navigation">
                       <button className="btn btn-default" disabled={!before || viewingPermalink} onClick={this.loadNewer}>
                         &lt; Newer
@@ -203,6 +192,11 @@ class LogsContainer extends React.PureComponent<Props, null> {
                         Older &gt;
                       </button>
                     </div>
+
+                    <SubredditInfo
+                      selectedSubreddit={params.subreddit}
+                      allSubreddits={subreddits}
+                    />
                   </div>
                 }
               </Sticky>

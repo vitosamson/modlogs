@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import LoadingBar from 'react-redux-loading-bar';
+import { StickyContainer, Sticky } from 'react-sticky';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -34,17 +35,27 @@ export default class App extends React.Component<AppProps, null> {
     const { children, params } = this.props;
 
     return (
-      <div className="app-container">
+      <StickyContainer className="app-container">
         <Header currentSubreddit={params.subreddit} onSelectSubreddit={this.changeSubreddit} />
-        <LoadingBar
-          showFastActions={true}
-          style={{
-            backgroundColor: '#446CB3',
+        <Sticky topOffset={43}>
+          {({ style }: { style: any }) => {
+            delete style.width; // don't let sticky override the loader's width
+
+            return (
+              <LoadingBar
+                showFastActions={true}
+                style={{
+                  ...style,
+                  zIndex: 10,
+                  backgroundColor: '#0397c3',
+                }}
+              />
+            );
           }}
-        />
+        </Sticky>
         { children }
-        <Footer subreddit={params.subreddit} />
-      </div>
+        <Footer />
+      </StickyContainer>
     );
   }
 }
