@@ -38,6 +38,9 @@ if (isDevelopment) {
     name: 'manifest',
   }));
   plugins.push(new UglifyJsPlugin());
+  plugins.push(new webpack.LoaderOptionsPlugin({
+    minimize: true,
+  }));
 
   plugins.push(function() {
     this.plugin('done', stats => {
