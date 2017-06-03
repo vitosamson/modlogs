@@ -54,88 +54,71 @@ class LogsContainer extends React.PureComponent<Props, null> {
     }
   }
 
-  public changeLimit = (nextLimit: string) => {
-    const { router, params: { subreddit }, location: { query } } = this.props;
-    if (nextLimit === query.limit) return;
+  private updateRouteQuery = (updatedQuery: any) => {
+    const { router, params: { subreddit }, location } = this.props;
     router.push({
       pathname: `/r/${subreddit}`,
       query: {
-        ...query,
-        limit: nextLimit,
+        ...location.query,
+        ...updatedQuery,
       },
     });
   }
 
+  public changeLimit = (nextLimit: string) => {
+    const { location: { query } } = this.props;
+    if (nextLimit === query.limit) return;
+    this.updateRouteQuery({ limit: nextLimit });
+  }
+
   public changeFilter = (nextFilter: string) => {
-    const { router, params: { subreddit }, location: { query } } = this.props;
+    const { location: { query } } = this.props;
     if (nextFilter === query.filter) return;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...query,
-        before: undefined,
-        after: undefined,
-        filter: nextFilter || undefined,
-      },
+    this.updateRouteQuery({
+      before: undefined,
+      after: undefined,
+      filter: nextFilter || undefined,
     });
   }
 
   public changeActions = (nextActions: string[]) => {
-    const { router, params: { subreddit }, location: { query } } = this.props;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...query,
-        actions: nextActions.join(',') || undefined,
-      },
+    this.updateRouteQuery({
+      actions: nextActions.join(',') || undefined,
     });
   }
 
   public changeType = (type: string | null) => {
-    const { router, params: { subreddit }, location: { query } } = this.props;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...query,
-        type: type || undefined,
-      },
+    this.updateRouteQuery({
+      type: type || undefined,
     });
   }
 
   public clearFilters = () => {
-    const { router, params: { subreddit }, location: { query } } = this.props;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...query,
-        filter: undefined,
-        actions: undefined,
-        type: undefined,
-      },
+    this.updateRouteQuery({
+      filter: undefined,
+      actions: undefined,
+      type: undefined,
+    });
+  }
+
+  private loadNewest = () => {
+    this.updateRouteQuery({
+      after: undefined,
+      before: undefined,
     });
   }
 
   private loadNewer = () => {
-    const { before, location, router, params: { subreddit } } = this.props;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...location.query,
-        after: undefined,
-        before,
-      },
+    this.updateRouteQuery({
+      after: undefined,
+      before: this.props.before,
     });
   }
 
   private loadOlder = () => {
-    const { after, location, router, params: { subreddit } } = this.props;
-    router.push({
-      pathname: `/r/${subreddit}`,
-      query: {
-        ...location.query,
-        before: undefined,
-        after,
-      },
+    this.updateRouteQuery({
+      before: undefined,
+      after: this.props.after,
     });
   }
 
@@ -147,6 +130,7 @@ class LogsContainer extends React.PureComponent<Props, null> {
       location,
       location: {
         query: { limit = '25', filter = '', actions = '', type },
+        query,
       },
       after,
       before,
@@ -184,11 +168,27 @@ class LogsContainer extends React.PureComponent<Props, null> {
                     />
 
                     <div className="log-navigation">
-                      <button className="btn btn-default" disabled={!before || viewingPermalink} onClick={this.loadNewer}>
+                      <button
+                        className="btn btn-default newest"
+                        disabled={(!query.before && !query.after) || viewingPermalink}
+                        onClick={this.loadNewest}
+                      >
+                        Newest
+                      </button>
+
+                      <button
+                        className="btn btn-default newer"
+                        disabled={!before || viewingPermalink}
+                        onClick={this.loadNewer}
+                      >
                         &lt; Newer
                       </button>
 
-                      <button className="btn btn-default" disabled={!after || viewingPermalink} onClick={this.loadOlder}>
+                      <button
+                        className="btn btn-default older"
+                        disabled={!after || viewingPermalink}
+                        onClick={this.loadOlder}
+                      >
                         Older &gt;
                       </button>
                     </div>

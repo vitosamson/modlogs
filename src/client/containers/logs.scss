@@ -20,12 +20,15 @@
       display: block;
       width: 100%;
 
-      &:first-child {
+      &.newest {
+        flex: 2;
         margin-right: 5px;
+        padding-left: 20px;
+        padding-right: 20px;
       }
 
-      &:last-child {
-        margin-left: 5px;
+      &.newer {
+        margin-right: 5px;
       }
     }
   }
