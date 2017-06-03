@@ -29,6 +29,9 @@ export default class SubredditInfo extends React.PureComponent<Props, null> {
         <div className="panel-body">
           <ul>
             <li>
+              <strong>Name: </strong> { subredditInfo.name }
+            </li>
+            <li>
               <strong>Subscribers: </strong> { subredditInfo.subscribers }
             </li>
             <li>
