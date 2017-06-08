@@ -110,6 +110,7 @@ declare module 'snoowrap' {
     unauthenticatedRequest(options: any): Promise<any>; // options: https://www.npmjs.com/package/request
     updateAccessToken(): Promise<string>;
     rawRequest(options: any): Promise<any>; // https://not-an-aardvark.github.io/snoowrap/snoowrap.html#rawRequest
+    ratelimitRemaining: number;
   }
 
   interface ListingOptions {

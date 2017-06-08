@@ -64,17 +64,7 @@ Make sure to pass the appropriate environment variables into the docker containe
 
 ## Processing subreddits, logs, and reports
 
-### Subreddits
-
-The list of subreddits that the modlogs user moderates, and their modlog configs, get stored in mongo as well. This is to avoid excessive reddit API calls because they're limited and slow.
-
-This is done via `<env vars> node build/server/jobs/subreddits` and should be run fairly often. This job is not queued and will run immediately.
-
-The env vars marked as required by `worker` are needed for this.
-
-### Logs and reports
-
-Log and report processing are queued. There are two components to this: producers and consumers.
+Subreddit, log and report processing are queued. There are two components to this: producers and consumers.
 
 The consumers should be run in a worker process which stays running continuously:
 
@@ -82,9 +72,10 @@ The consumers should be run in a worker process which stays running continuously
 
 This will ensure that any new queue items are processed.
 
-The producers should be run periodically. There are currently two producers: one for the logs and one for PMs which produce moderator reports:
+The producers should be run periodically. There are currently three producers: one to fetch the list of subreddits, one for the logs and one for PMs which produce moderator reports:
 
-`<env vars> node build/server/queue/producers/modlogs`  
-`<env vars> node build/server/queue/producers/messages`
+`<env vars> node -e "require('build/server/queue/producers/modlogs').run()"`  
+`<env vars> node -e "require('build/server/queue/producers/messages').run()"`  
+`<env vars> node -e "require('build/server/queue/producers/subreddits').run()"`
 
 The env vars marked as required by `worker` are needed for both.

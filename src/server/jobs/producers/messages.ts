@@ -8,6 +8,7 @@ import * as yaml from 'js-yaml';
 import reddit from '../../reddit';
 import getLogger from '../../logger';
 import { addJob, getQueuedJobsByType } from '../queue';
+import { flushPendingMetrics } from '../../models/metric';
 
 const logger = getLogger('MessagesQueueProducer');
 
@@ -89,6 +90,7 @@ export async function run() {
     logger.error('error processing messages');
     logger.error(inspect(err));
   } finally {
+    await flushPendingMetrics();
     process.exit();
   }
 }

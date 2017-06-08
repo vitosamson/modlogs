@@ -4,6 +4,7 @@ import * as yaml from 'js-yaml';
 import Snoowrap from './snoowrap';
 import getLogger from './logger';
 import { ISubreddit, ISubredditModlogConfig } from './models/subreddit/type';
+import { Metric, MetricType } from './models/metric';
 
 const appId = process.env.APP_ID;
 const appSecret = process.env.APP_SECRET;
@@ -27,17 +28,49 @@ const thingIdRegExp = /\/r\/\w+\/comments\/(\w+)\/?\w+\/?(\w+)?/;
 export const isComment = (fullname: string) => fullname && fullname.startsWith('t1_');
 export const isSubmission = (fullname: string) => fullname && fullname.startsWith('t3_');
 
-export class Reddit {
-  private r: Snoowrap;
-  private logger = getLogger('reddit');
+// override snoowrap's rawRequest so we can record the reddit api requests
+class SnoowrapWithMetrics extends Snoowrap {
+  public rawRequest(options: any): Promise<any> {
+    let metric: Metric;
+    if (options && options.uri !== 'api/v1/access_token') {
+      metric = new Metric(MetricType.redditApi, {
+        baseUrl: options.baseUrl,
+        uri: options.uri,
+        method: options.method,
+        qs: options.qs,
+        body: options.form,
+      });
+    }
 
-  // tslint:disable-next-line:member-ordering
+    return super.rawRequest(options).then((...res: any[]) => {
+      if (metric) {
+        metric.report(null, {
+          rateLimitRemaining: this.ratelimitRemaining,
+        });
+      }
+      return Promise.resolve(...res);
+    }).catch((err: any) => {
+      if (metric) metric.report({
+        status: err.statusCode,
+        message: err.message,
+      }, {
+        rateLimitRemaining: this.ratelimitRemaining,
+      });
+      return Promise.reject(err);
+    });
+  }
+}
+
+export class Reddit {
   constructor(opts?: ConstructorOptions) {
     const options: ConstructorOptions = Object.assign({}, defaultSnooOpts, opts);
-    this.r = new Snoowrap(options);
+    this.r = new SnoowrapWithMetrics(options);
     this.logger.info('running as reddit user', options.username);
     this.logger.info('running under app id', options.clientId);
   }
+
+  private r: Snoowrap;
+  private logger = getLogger('reddit');
 
   public async getModdedSubreddits(): Promise<ISubreddit[]> {
     const subs = await this.r.getModeratedSubreddits().fetchAll();

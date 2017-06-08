@@ -9,29 +9,35 @@ type IMongoLogQuery = {
 };
 
 const logger = getLogger('DB');
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost/modlogs';
-let db: Db;
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost';
+const dbs: { [name: string]: Db } = {};
 
 export const ID_ASCENDING = 1;
 export const ID_DESCENDING = -1;
 
-export async function connectDb(): Promise<Db> {
-  if (!db) {
+export const enum DBNames {
+  logs = 'modlogs_logs',
+  internal = 'modlogs_internal',
+}
+
+export async function connectDb(dbName: DBNames): Promise<Db> {
+  if (!dbs[dbName]) {
+    const dbUrl = `${mongoUri}/${dbName}`;
     try {
-      db = await MongoClient.connect(mongoUri);
+      dbs[dbName] = await MongoClient.connect(dbUrl);
+      logger.info(`connected to database at ${dbUrl}`);
     } catch (err) {
-      logger.error('error connecting to database');
+      logger.error(`error connecting to database at ${dbUrl}`);
       logger.error(inspect(err));
       process.exit(1);
     }
-    logger.info('connected to database');
   }
 
-  return db;
+  return dbs[dbName];
 }
 
-export async function getDb(): Promise<Db> {
-  return connectDb();
+export async function getDb(dbName: DBNames): Promise<Db> {
+  return connectDb(dbName);
 }
 
 export function createMongoQueryFromConfig(config: ISubredditModlogConfig): IMongoLogQuery {

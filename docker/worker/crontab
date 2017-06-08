@@ -1,7 +1,7 @@
 # m h dom mon dow user cmd
 
 # fetch our subreddits every minute
-* * * * * /usr/local/bin/node /app/build/server/jobs/subreddits.js >> /var/log/jobs/subreddits 2>&1
+* * * * * /usr/local/bin/node -e "require('/app/build/server/jobs/producers/subreddits').run()" >> /var/log/jobs/subreddits 2>&1
 
 # fetch modlogs every 5 minutes
 */5 * * * * /usr/local/bin/node -e "require('/app/build/server/jobs/producers/modlogs').run()" >> /var/log/jobs/modlogs 2>&1

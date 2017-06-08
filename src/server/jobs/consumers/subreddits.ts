@@ -12,13 +12,13 @@
  */
 
 import { inspect } from 'util';
-import getLogger from '../logger';
-import reddit from '../reddit';
-import { getMySubredditsCollection, ISubreddit } from '../models/subreddit';
+import getLogger from '../../logger';
+import reddit from '../../reddit';
+import { getMySubredditsCollection, ISubreddit } from '../../models/subreddit';
 
-const logger = getLogger('subredditsWorker');
+const logger = getLogger('SubredditsConsumer');
 
-async function run() {
+export async function fetchSubreddits() {
   const subredditsCollection = await getMySubredditsCollection();
   const currentSubreddits = await subredditsCollection.find<ISubreddit>().toArray();
   const newSubreddits = await reddit.getModdedSubreddits();
@@ -31,7 +31,7 @@ async function run() {
       const { matchedCount } = await subredditsCollection.updateOne(
         { name: sub.name },
         { ...sub, modlogConfig: subredditConfig },
-        { upsert: true },
+        { upsert: true }
       );
       if (matchedCount) {
         logger.info('updated subreddit', sub.name);
@@ -57,8 +57,5 @@ async function run() {
     }
   }));
 
-  logger.info('finished');
-  process.exit();
+  logger.info('finished processing subreddits');
 }
-
-run();

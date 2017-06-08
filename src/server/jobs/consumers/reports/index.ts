@@ -2,6 +2,7 @@ import reddit from '../../../reddit';
 import getLogger from '../../../logger';
 import topOffendersReport, { TopOffendersRequestParams } from './topOffenders';
 import userReport, { UserReportRequestParams } from './user';
+import { Metric, MetricType } from '../../../models/metric';
 
 const logger = getLogger('ReportsQueueConsumer');
 
@@ -18,14 +19,17 @@ interface ReportJobData {
 export default async function processReport(data: ReportJobData) {
   const type = (data.request.type || '').trim().toLowerCase();
   logger.info('processing %s report for %s (message %s)', type, data.subreddit, data.messageFullname);
+  const metric = new Metric(MetricType.report, data);
 
   // TODO: send a message back if there was an error or unknown report type?
 
   switch (type) {
     case 'top offenders':
-      return topOffendersReport(data);
+      await topOffendersReport(data);
+      metric.report();
     case 'user':
-      return userReport(data);
+      await userReport(data);
+      metric.report();
     default:
       logger.info('unknown report type', type);
       await reddit.markMessagesRead([data.messageFullname]);

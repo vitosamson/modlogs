@@ -11,7 +11,7 @@ const queue = kue.createQueue({
 
 logger.info('connected to queue at', REDIS_URL);
 
-export const addJob = <D>({ jobType, data }: { jobType: string; data: D }): Promise<kue.Job> => {
+export const addJob = <D>({ jobType, data }: { jobType: string; data?: D }): Promise<kue.Job> => {
   const job = queue.create(jobType, data).removeOnComplete(true);
 
   return new Promise<kue.Job>((resolve, reject) => {

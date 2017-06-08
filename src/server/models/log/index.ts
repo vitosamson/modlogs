@@ -1,9 +1,9 @@
 import { Collection } from 'mongodb';
-import { getDb } from '../../db';
+import { getDb, DBNames } from '../../db';
 import { ILog } from './type';
 
 export async function getSubredditLogsCollection(subreddit: string): Promise<Collection> {
-  const db = await getDb();
+  const db = await getDb(DBNames.logs);
   const collection = await db.collection(subreddit.toLowerCase());
 
   // create the indices if they don't exist

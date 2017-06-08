@@ -1,12 +1,12 @@
 import { Collection } from 'mongodb';
-import { getDb } from '../../db';
+import { getDb, DBNames } from '../../db';
 import { ISubreddit, ISubredditModlogConfig } from './type';
 
 interface ISubredditWithConfig extends ISubreddit {
   modlogConfig: ISubredditModlogConfig;
 }
 
-const mySubredditsCollectionName = 'subreddits';
+const subredditsCollectionName = 'subreddits';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 // config items that are expected to be arrays of lowercase strings, which get normalized in getSubredditConfig
@@ -31,8 +31,8 @@ const defaultSubredditModlogConfig: ISubredditModlogConfig = {
 };
 
 export async function getMySubredditsCollection(): Promise<Collection> {
-  const db = await getDb();
-  return db.collection(mySubredditsCollectionName);
+  const db = await getDb(DBNames.internal);
+  return db.collection(subredditsCollectionName);
 }
 
 export async function getMySubreddits(): Promise<ISubreddit[]> {

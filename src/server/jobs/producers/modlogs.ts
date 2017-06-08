@@ -8,6 +8,7 @@ import { inspect } from 'util';
 import { addJob, getQueuedJobsByType } from '../queue';
 import { getMySubreddits } from '../../models/subreddit';
 import getLogger from '../../logger';
+import { flushPendingMetrics } from '../../models/metric';
 
 const logger = getLogger('ModlogQueueProducer');
 export const jobType = 'fetchLogs';
@@ -43,6 +44,7 @@ export const run = async () => {
     logger.error('error adding %s job', jobType);
     logger.error(inspect(err));
   } finally {
+    await flushPendingMetrics();
     process.exit();
   }
 };
