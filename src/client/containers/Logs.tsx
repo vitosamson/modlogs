@@ -11,7 +11,6 @@ import SubredditInfo from '../components/SubredditInfo';
 import { LoadPropsArgs, LoadPropsCb } from '../types';
 import shallowEqual from '../utils/shallowEqual';
 import { ISubreddit } from '../../server/models/subreddit/type';
-import '../components/Logs/logs.scss';
 import './logs.scss';
 
 interface Params {
@@ -134,6 +133,7 @@ class LogsContainer extends React.PureComponent<Props, null> {
       },
       after,
       before,
+      fetching,
     } = this.props;
     const viewingPermalink = !!params.permalinkId;
 
@@ -143,6 +143,8 @@ class LogsContainer extends React.PureComponent<Props, null> {
           <StickyContainer className="row">
             <div className="col-md-8">
               <div className="log-item-container">
+                { fetching && <div className="logs-fetching-overlay" /> }
+
                 { React.cloneElement(children, {
                   location,
                   onChangeFilter: this.changeFilter,
@@ -212,4 +214,5 @@ export default connect(state => ({
   subreddits: state.app.subreddits,
   after: state.logs.after,
   before: state.logs.before,
+  fetching: state.logs.fetching,
 }), actions)(LogsContainer);

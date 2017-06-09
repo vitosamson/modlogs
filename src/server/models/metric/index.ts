@@ -35,6 +35,8 @@ export async function reportMetric(metric: IMetric | IMetric[]): Promise<void> {
 }
 
 async function commitPendingMetrics(metrics: IMetric[]) {
+  if (!metrics.length) return;
+
   const collection = await getMetricsCollection();
   try {
     await collection.insertMany(metrics);

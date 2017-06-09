@@ -34,7 +34,6 @@ export default (state: ILogsState = initialState, action: Action): ILogsState =>
       return {
         ...state,
         fetching: true,
-        logs: action.subreddit === state.subreddit ? state.logs : [],
         subreddit: action.subreddit,
       };
 
