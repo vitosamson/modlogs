@@ -53,14 +53,7 @@ app.use(compress());
 app.use('/assets', express.static(resolve('build/assets')));
 app.get('/favicon.ico', (req, res) => res.status(200).send());
 app.use('/api', apiRouter);
-app.get('/info', async (req, res) => {
-  try {
-    res.json(await info());
-  } catch (err) {
-    logger.error(inspect(err));
-    res.status(500).send();
-  }
-});
+app.get('/info', info);
 app.use(renderUi);
 
 app.use(expressWinston.errorLogger({
