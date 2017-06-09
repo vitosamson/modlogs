@@ -171,6 +171,10 @@ export class Reddit {
       return [];
     }
   }
+
+  public acceptModeratorInvite(subreddit: string) {
+    return this.r.getSubreddit(subreddit).acceptModeratorInvite();
+  }
 }
 
 export default new Reddit();

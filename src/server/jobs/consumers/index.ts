@@ -6,12 +6,13 @@ import { addJobProcessor } from '../queue';
 import { fetchLogs, processLogs, processLogsJobType } from './modlogs';
 import { fetchSubreddits } from './subreddits';
 import processReports from './reports';
+import processModInvite from './modInvite';
 import { jobType as fetchLogsJobType } from '../producers/modlogs';
 import { subjects as messageSubjects } from '../producers/messages';
 import { jobType as fetchSubredditsJobType } from '../producers/subreddits';
 import getLogger from '../../logger';
 
-const logger = getLogger('QueueConsumer');
+const logger = getLogger('QueueListener');
 
 logger.info('adding queue processor for', fetchLogsJobType);
 addJobProcessor({
@@ -32,6 +33,13 @@ addJobProcessor({
   jobType: messageSubjects.report,
   concurrency: 2,
   processor: processReports,
+});
+
+logger.info('adding queue processor for', messageSubjects.modInvite);
+addJobProcessor({
+  jobType: messageSubjects.modInvite,
+  concurrency: 10,
+  processor: processModInvite,
 });
 
 logger.info('adding queue processor for', fetchSubredditsJobType);
