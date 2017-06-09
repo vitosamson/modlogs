@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import Select from './Select';
 import ExternalLink from './ExternalLink';
 import { AppState } from '../store/reducers';
@@ -19,7 +20,9 @@ class Header extends React.PureComponent<Props & AppState, null> {
 
     return (
       <header>
-        <h1 className="name">Mod Logs</h1>
+        <h1 className="name">
+          <Link to="/">Mod Logs</Link>
+        </h1>
 
         <div className="subreddit-selector">
           <Select

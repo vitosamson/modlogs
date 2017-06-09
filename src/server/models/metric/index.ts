@@ -25,7 +25,10 @@ export async function reportMetric(metric: IMetric | IMetric[]): Promise<void> {
    * save the metrics in batches since they may be reported rapidly
    */
   clearTimeout(pendingMetricsTimeout);
-  pendingMetricsTimeout = setTimeout(() => {
+
+  // use global.setTimeout here because ts/ts-loader seems to be getting tripped up with it in the UI build,
+  // erroring with: Type 'number' is not assignable to type 'Timer'.
+  pendingMetricsTimeout = global.setTimeout(() => {
     commitPendingMetrics(pendingMetrics);
     pendingMetrics = [];
   }, metricBatchTime);

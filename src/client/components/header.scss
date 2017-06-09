@@ -8,6 +8,10 @@
   flex-direction: row;
   align-items: center;
 
+  a {
+    color: rgb(245, 245, 245);
+  }
+
   .name {
     font-size: 1.5em;
     flex: 1;
@@ -53,10 +57,6 @@
     flex: 1;
     text-align: right;
     padding-right: 20px;
-
-    a {
-      color: rgb(245, 245, 245);
-    }
 
     @media (max-width: $screen-xs-max) {
       display: none; // TODO
