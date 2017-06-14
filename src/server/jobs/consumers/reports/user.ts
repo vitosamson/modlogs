@@ -99,21 +99,21 @@ export default async function processUserReport({ request, subreddit, messageFul
     const commentsTable = createMarkdownTable(
       ['Comment', 'Date'],
       removedComments.links.sort((a, b) =>
-        b.timestamp - a.timestamp,
+        b.timestamp - a.timestamp
       ).map(link => ([
         `[${truncateContent(link.content)}](${link.link})`,
         new Date(link.timestamp).toLocaleDateString(),
-      ])),
+      ]))
     );
 
     const submissionsTable = createMarkdownTable(
       ['Submission', 'Date'],
       removedSubmissions.links.sort((a, b) =>
-        b.timestamp - a.timestamp,
+        b.timestamp - a.timestamp
       ).map(link => ([
         `[${truncateContent(link.title)}](${link.link})`,
         new Date(link.timestamp).toLocaleDateString(),
-      ])),
+      ]))
     );
 
     message = `Hello,

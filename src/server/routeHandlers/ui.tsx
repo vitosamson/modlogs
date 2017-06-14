@@ -72,6 +72,6 @@ function loadProps(renderProps: any, store: Store<any>): Promise<LoadedProps> {
 function renderFullPage(html: string, preloadedState: object, asyncPropsScriptTag: string) {
   return htmlTpl.replace(
     '__preloaded_state__',
-    JSON.stringify(preloadedState).replace(/'/g, '&apos;'),
+    JSON.stringify(preloadedState).replace(/'/g, '&apos;')
   ).replace('__rendered_html__', html).replace('__async_props_script__', asyncPropsScriptTag);
 }

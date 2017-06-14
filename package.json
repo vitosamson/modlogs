@@ -72,7 +72,7 @@
     "server:build:watch": "cd src/server && tsc --watch",
     "server:run": "node build/server/server",
     "server:run:watch": "nodemon -w build -e js,html -x 'NODE_ENV=development node build/server/server'",
-    "lint": "tslint -e \"src/**/*.d.ts\" src/**/*.ts src/**/*.tsx",
+    "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
     "clean": "trash build/**/*"
   },
   "devDependencies": {
