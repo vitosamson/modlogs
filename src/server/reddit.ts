@@ -23,10 +23,29 @@ const defaultSnooOpts: ConstructorOptions = {
 const modLogWikiPageName = 'modlog_config';
 
 // used for getting the submission and comment ids out of a permalink
-const thingIdRegExp = /\/r\/\w+\/comments\/(\w+)\/?\w+\/?(\w+)?/;
 
 export const isComment = (fullname: string) => fullname && fullname.startsWith('t1_');
 export const isSubmission = (fullname: string) => fullname && fullname.startsWith('t3_');
+
+interface ThingIds {
+  submissionId: string | null;
+  commentId: string | null;
+  subreddit: string | null;
+}
+
+const thingIdRegExp = /\/r\/(\w+)\/?(?:comments)?\/?(\w+)?\/?(?:\w+)?\/?(\w+)?/;
+export function getThingIdsFromLink(link: string): ThingIds {
+  const noResults: ThingIds = { submissionId: null, commentId: null, subreddit: null };
+  if (typeof link !== 'string') return noResults;
+  const match = link.match(thingIdRegExp);
+  if (!match || !match.length) return noResults;
+
+  return {
+    subreddit: match[1],
+    submissionId: match[2] || null,
+    commentId: match[3] || null,
+  };
+}
 
 // override snoowrap's rawRequest so we can record the reddit api requests
 class SnoowrapWithMetrics extends Snoowrap {
@@ -97,14 +116,8 @@ export class Reddit {
     }
   }
 
-  public getThingIdsFromLink(link: string): { submissionId?: string; commentId?: string; } {
-    if (typeof link !== 'string') return {};
-    const match = link.match(thingIdRegExp);
-    if (!match || !match.length) return {};
-    return {
-      submissionId: match[1],
-      commentId: match[2],
-    };
+  public getThingIdsFromLink(link: string) {
+    return getThingIdsFromLink(link);
   }
 
   public async getInboxMessages(): Promise<PrivateMessage[]> {

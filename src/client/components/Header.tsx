@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import { Option } from 'react-select';
 import Select from './Select';
 import ExternalLink from './ExternalLink';
 import { AppState } from '../store/reducers';
-import { ISubreddit } from '../../server/models/subreddit/type';
 import './header.scss';
 
 interface Props {
@@ -16,7 +16,12 @@ interface Props {
 class Header extends React.PureComponent<Props & AppState, null> {
   public render() {
     const { subreddits, currentSubreddit, onSelectSubreddit, loading } = this.props;
-    const sortedSubreddits = subreddits.sort((a, b) => a.nameLowercase.localeCompare(b.nameLowercase));
+    const subredditOptions = subreddits.sort((a, b) =>
+      a.nameLowercase.localeCompare(b.nameLowercase)
+    ).map(sub => ({
+      label: sub.name,
+      value: sub.nameLowercase,
+    }));
 
     return (
       <header>
@@ -26,14 +31,12 @@ class Header extends React.PureComponent<Props & AppState, null> {
 
         <div className="subreddit-selector">
           <Select
-            options={sortedSubreddits}
+            options={subredditOptions}
             value={(currentSubreddit || '').toLowerCase()}
-            placeholder={loading ? 'loading...' : 'Select a subreddit'}
-            valueRenderer={(opt: ISubreddit) => <span>/r/{opt.name}</span>}
-            valueKey="nameLowercase"
-            labelKey="name"
+            placeholder="Select a subreddit"
+            valueRenderer={opt => <span>/r/{opt.label}</span>}
             clearable={false}
-            onChange={(opt: ISubreddit) => onSelectSubreddit(opt.name)}
+            onChange={(opt: Option) => onSelectSubreddit(opt.label)}
             id="subreddit-selector"
             disabled={loading}
           />

@@ -9,7 +9,7 @@
     "noImplicitAny": true,
     "module": "commonjs",
     "jsx": "react",
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "moduleResolution": "node",
     "lib": [
       "dom",
@@ -19,7 +19,7 @@
     "noUnusedLocals": true
   },
   "include": [
-    "./index.ts",
+    "./**/*.ts",
     "./jobs/**/*",
     "./queue/**/*",
     "../types/**/*"

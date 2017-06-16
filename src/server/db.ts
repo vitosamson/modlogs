@@ -52,7 +52,7 @@ export function createMongoQueryFromConfig(config: ISubredditModlogConfig): IMon
   if (config.include_actions) {
     query.action = { $in: config.include_actions };
   } else if (config.exclude_actions) {
-    query.action = { $in: config.exclude_actions };
+    query.action = { $nin: config.exclude_actions };
   }
 
   return query;

@@ -1,10 +1,7 @@
-import reddit from '../../../reddit';
-import { getSubredditLogsCollection } from '../../../models/log';
 import getLogger from '../../../logger';
-import { createMarkdownTable, parsePeriod } from '../../../utils';
-
-const logger = getLogger('ReportsQueueConsumer');
-const headerRows = ['User', 'Removed comments', 'Removed submissions', 'Total removed'];
+import reddit from '../../../reddit';
+import generateTopOffendersReport from '../../../reports/topOffenders';
+import { createMarkdownTable } from '../../../utils';
 
 export interface TopOffendersRequestParams {
   limit?: string;
@@ -17,76 +14,23 @@ interface TopOffendersReportJobData {
   messageFullname: string;
 }
 
-export default async function topOffendersReport({ request, subreddit, messageFullname }: TopOffendersReportJobData) {
-  const limit = Math.min(parseInt(request.limit, 10) || 5, 100);
-  const { periodTimestamp, humanizedPeriod } = parsePeriod(request.period || '1 month');
-  const collection = await getSubredditLogsCollection(subreddit);
-  const moderators = await reddit.getSubredditModerators(subreddit);
+const logger = getLogger('ReportsQueueConsumer');
+const headerRow = ['User', 'Removed comments', 'Removed submissions', 'Total removed'];
 
-  logger.info('running top offenders report');
-  logger.info('subreddit: %s, period: %s %s', subreddit, periodTimestamp, humanizedPeriod);
+export default async function processTopOffendersReport({ request, subreddit, messageFullname}: TopOffendersReportJobData) {
+  const report = await generateTopOffendersReport({
+    subreddit,
+    limit: parseInt(request.limit, 10),
+    period: request.period,
+  });
 
-  const match = {
-    author: {
-      $nin: moderators.map(mod => mod.name).concat(['[deleted]', 'Automoderator']),
-    },
-    action: {
-      $in: ['removecomment', 'removelink'],
-    },
-    timestamp: {
-      $gte: periodTimestamp,
-    },
-  };
-
-  const group = {
-    _id: '$author',
-    removedComments: {
-      $sum: {
-        $cond: [{
-          $eq: ['$action', 'removecomment'],
-        }, 1, 0],
-      },
-    },
-    removedSubmissions: {
-      $sum: {
-        $cond: [{
-          $eq: ['$action', 'removelink'],
-        }, 1, 0],
-      },
-    },
-  };
-
-  const project = {
-    user: '$_id',
-    _id: 0,
-    removedComments: 1,
-    removedSubmissions: 1,
-    totalRemoved: {
-      $sum: ['$removedComments', '$removedSubmissions'],
-    },
-  };
-
-  const problemUsers = await collection.aggregate([{
-    $match: match,
-  }, {
-    $group: group,
-  }, {
-    $project: project,
-  }, {
-    $sort: {
-      totalRemoved: -1,
-    },
-  }, {
-    $limit: limit,
-  }]).toArray();
-
-  const table = createMarkdownTable(headerRows, problemUsers.map(user => (
-    [user.user, user.removedComments, user.removedSubmissions, user.totalRemoved]
+  const table = createMarkdownTable(headerRow, report.offenders.map(offender => (
+    [offender.username, offender.removedComments, offender.removedSubmissions, offender.totalRemoved]
   )));
 
   const message = `Hello,
 
-Here is the Top Offenders report you requested. These are the top ${limit} users with the most removed comments and submissions in the past ${humanizedPeriod}.
+Here is the Top Offenders report you requested. These are the top ${report.limit} users with the most removed comments and submissions in the past ${report.parsedPeriod}.
 
 ${table}`;
 

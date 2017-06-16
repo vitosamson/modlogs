@@ -1,5 +1,9 @@
 import { getMySubreddits, ISubreddit } from '../../models/subreddit';
 
 export default async function subreddits(): Promise<ISubreddit[]> {
-  return getMySubreddits();
+  const subs = await getMySubreddits();
+  return subs.map(sub => ({
+    ...sub,
+    modlogConfig: undefined,
+  }));
 }

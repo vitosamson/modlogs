@@ -7,6 +7,9 @@ export interface ISubreddit {
   title: string;
   created: number;
   subscribers: number;
+
+  // this is stored in the db, but is not part of the subreddit model itself and should not be returned to the client
+  // modlogConfig: ISubredditModlogConfig;
 }
 
 export interface ISubredditModlogConfig {
@@ -18,8 +21,8 @@ export interface ISubredditModlogConfig {
   show_submission_author?: boolean;
   show_submission_title?: boolean;
   show_moderator_name?: boolean;
-  include_actions: string[];
-  exclude_actions: string[];
-  include_moderators: string[];
-  exclude_moderators: string[];
+  include_actions?: string[];
+  exclude_actions?: string[];
+  include_moderators?: string[];
+  exclude_moderators?: string[];
 }

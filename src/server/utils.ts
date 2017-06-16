@@ -1,6 +1,9 @@
 import * as moment from 'moment';
 
-export function createMarkdownTable(columnHeaders: string[], rows: string[][]): string {
+type Cell = string | number;
+type Row = Cell[];
+
+export function createMarkdownTable(columnHeaders: Row, rows: Row[]): string {
   const headerRow = `| ${columnHeaders.join(' | ')} |`;
   const separatorRow = `${'|---'.repeat(columnHeaders.length)}|`;
 

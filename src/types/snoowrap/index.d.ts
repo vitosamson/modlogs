@@ -1,5 +1,5 @@
 declare module 'snoowrap' {
-  import EventEmitter from 'events';
+  import * as EventEmitter from 'events';
 
   namespace Snoowrap {
     interface ConstructorOptions {
@@ -154,7 +154,8 @@ declare module 'snoowrap' {
     blockAuthor(): Promise<T>;
   }
 
-  class VoteableContent<T> extends ReplyableContent<T> {
+  export class VoteableContent<T> extends ReplyableContent<T> {
+    subreddit: Subreddit;
     upvote(): Promise<T>;
     downvote(): Promise<T>;
     unvote(): Promise<T>
@@ -454,7 +455,7 @@ declare module 'snoowrap' {
 
   type AvailableSorts = 'confidence' | 'top' | 'new' | 'controversial' | 'old' | 'random' | 'qa';
 
-  class Submission extends VoteableContent<Submission> {
+  export class Submission extends VoteableContent<Submission> {
     subreddit: Subreddit;
 
     hide(): Promise<this>;

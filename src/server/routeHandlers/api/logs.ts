@@ -13,7 +13,7 @@ export interface ILogsQuery {
   before?: string;
   filter?: string;
   actions?: string;
-  type?: string;
+  type?: 'comments' | 'submissions';
 }
 
 export interface ILogsRetVal {
