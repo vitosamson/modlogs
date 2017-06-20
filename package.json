@@ -74,7 +74,8 @@
     "server:run:watch": "nodemon -w build -e js,html -x 'NODE_ENV=development node build/server/server'",
     "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
     "clean": "trash build/**/*",
-    "test": "jest --forceExit"
+    "test": "jest --forceExit",
+    "test:watch": "jest --forceExit --watch"
   },
   "devDependencies": {
     "@types/jest": "^19.2.4",

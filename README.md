@@ -79,3 +79,11 @@ The producers should be run periodically. There are currently three producers: o
 `<env vars> node -e "require('build/server/queue/producers/subreddits').run()"`
 
 The env vars marked as required by `worker` are needed for both.
+
+## Tests
+
+Tests are run using `jest`.
+
+To run the tests, run `yarn test` for a single run or `yarn test:watch` to run in watch mode. You can also pass additional options to jest by running `yarn test -- --opt1 --opt2 [etc]`.
+
+The tests rely on a running Mongo DB accessible at either `mongodb://localhost:27017` or whatever the environment variable `MONGODB_URI` is set to.
