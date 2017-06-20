@@ -2,8 +2,6 @@ version: "3"
 services:
   web:
     image: vitosamson/modlogs:web
-    volumes:
-      - /app
     ports:
       - "80:80"
     environment:
@@ -19,8 +17,6 @@ services:
 
   worker:
     image: vitosamson/modlogs:worker
-    volumes:
-      - /app
     environment:
       APP_ID:
       APP_SECRET:
