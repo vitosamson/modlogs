@@ -9,6 +9,7 @@ ssh -i scripts/deploy_key -o "StrictHostKeyChecking no" "$DEPLOY_USER"@"$DEPLOY_
 cd /srv/modlogs/app
 sudo git pull origin master
 cd docker
+sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 sudo docker-compose pull --parallel
 source /srv/modlogs/env.sh
 sudo docker-compose up -d
