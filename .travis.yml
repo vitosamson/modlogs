@@ -19,6 +19,7 @@ script:
   - yarn run test:ci
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: scripts/deploy
   on:
