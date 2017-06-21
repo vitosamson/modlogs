@@ -12,5 +12,5 @@ cd docker
 sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 sudo docker-compose pull --parallel
 source /srv/modlogs/app/env.sh
-sudo docker-compose up -d
+sudo -E docker-compose up -d
 ENDDEPLOY
