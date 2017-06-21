@@ -1,0 +1,15 @@
+#!/bin/sh
+
+docker build -t "$DOCKER_REPO":web -f docker/web/Dockerfile .
+docker build -t "$DOCKER_REPO":worker -f docker/worker/Dockerfile .
+docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+docker push "$DOCKER_REPO"
+
+ssh -i scripts/deploy_key "$DEPLOY_USER"@"$DEPLOY_HOST" <<'ENDDEPLOY'
+cd /srv/modlogs/app
+sudo git pull origin master
+cd docker
+sudo docker-compose pull --parallel
+source /srv/modlogs/env.sh
+sudo docker-compose up -d
+ENDDEPLOY

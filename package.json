@@ -75,7 +75,8 @@
     "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
     "clean": "trash build/**/*",
     "test": "jest --forceExit",
-    "test:watch": "jest --forceExit --watch"
+    "test:watch": "yarn test -- --watch",
+    "test:ci": "yarn test -- -i"
   },
   "devDependencies": {
     "@types/jest": "^19.2.4",

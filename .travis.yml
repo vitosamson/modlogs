@@ -1,0 +1,25 @@
+language: node_js
+
+node_js:
+  - "7"
+
+cache: yarn
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_cec6b4e46a9c_key -iv $encrypted_cec6b4e46a9c_iv -in scripts/deploy_key.enc -out scripts/deploy_key -d
+  - docker run -d -p 27017:27017 mongo
+  - docker ps -a
+
+script:
+  - yarn run test:ci
+
+deploy:
+  provider: script
+  script: scripts/deploy
+  on:
+    branch: master
