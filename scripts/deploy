@@ -11,6 +11,6 @@ sudo git pull origin master
 cd docker
 sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 sudo docker-compose pull --parallel
-source /srv/modlogs/env.sh
+source /srv/modlogs/app/env.sh
 sudo docker-compose up -d
 ENDDEPLOY
