@@ -28,7 +28,6 @@ interface AggregatedResult {
   logs: ILog[];
 }
 
-const MAX_PERIOD = '3 months';
 const logger = getLogger('UserReportGenerator');
 
 export const parseUsername = (username: string): string => {
@@ -41,10 +40,10 @@ export default async function userReport({ username, period, subreddit }: UserRe
   username = parseUsername(username);
 
   const authorRegex = new RegExp(username, 'i');
-  const { periodTimestamp, humanizedPeriod } = parsePeriod(period || '1 month', MAX_PERIOD);
+  const { periodTimestamp, humanizedPeriod } = parsePeriod(period || '1 month');
 
   logger.info('running user report');
-  logger.info('subreddit: %s, user: %s, period: %s %s', subreddit, username, periodTimestamp, humanizedPeriod);
+  logger.info('subreddit: %s, user: %s, period: %s (%s)', subreddit, username, humanizedPeriod, periodTimestamp);
 
   const match = {
     author: authorRegex,

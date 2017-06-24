@@ -11,7 +11,7 @@ export async function run() {
 
   if (queuedJobs.length > 0) {
     logger.info('duplicate job, aborting');
-    return;
+    process.exit();
   }
 
   await addJob({ jobType });

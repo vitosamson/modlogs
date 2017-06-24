@@ -135,9 +135,7 @@ period: 3 months
 
 ### Specific user
 
-Use this report type to get a more detailed report on a specific user. In addition to the total number of removals, it will give the percentage of removals to total contributions as well as the latest comment and submission.
-
-Due to limits of the Reddit API, this is limited to a maximum period of 3 months.
+Use this report type to get a more detailed report on a specific user. It returns a list of removed content, the total number of removals, and the percentage of removals to contributions (contributions are limited to 3 months due to limits of the Reddit API, so this percentage may be inaccurate for periods of greater than 3 months).
 
 Example message body:
 
@@ -148,7 +146,7 @@ type: user
 # this is required
 username: spez    # or /u/spez, either way is acceptable
 
-# optional, defaults to 1 month. max value of 3 months
+# optional, defaults to 1 month
 # example values: 1 day, 2 weeks, 3 months, etc
 period: 2 weeks
 ```
