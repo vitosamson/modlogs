@@ -11,6 +11,14 @@ sudo git pull origin master
 cd docker
 sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 sudo docker-compose pull --parallel
-source /srv/modlogs/app/env.sh
+
+NODE_ENV=production \
+LOG_LEVEL=info \
+APP_ID="$APP_ID" \
+APP_SECRET="$APP_SECRET" \
+REDDIT_USER="$REDDIT_USER" \
+REDDIT_PASSWORD="$REDDIT_PASSWORD" \
+USER_AGENT="$USER_AGENT" \
 sudo -E docker-compose up -d
+
 ENDDEPLOY
