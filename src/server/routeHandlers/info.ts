@@ -5,9 +5,14 @@ import { Request, Response } from 'express';
 let commit: string;
 
 try {
-  const head = readFileSync(resolve(process.cwd(), '.git/HEAD')).toString();
-  const ref = head.trim().split('ref: ')[1];
-  commit = readFileSync(resolve(process.cwd(), '.git', ref)).toString().trim();
+  const head = readFileSync(resolve(process.cwd(), '.git/HEAD')).toString().trim();
+
+  if (/ref\:/.test(head)) {
+    const ref = head.split('ref: ')[1];
+    commit = readFileSync(resolve(process.cwd(), '.git', ref)).toString().trim();
+  } else {
+    commit = head;
+  }
 } catch (e) {
   commit = '';
 }
