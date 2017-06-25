@@ -24,21 +24,26 @@ describe('User Report Generator', () => {
 
   it('returns logs only for the specified subreddit', async () => {
     const report = await userReport({ username: 'homer', subreddit: subName, period: '3 months' });
+    expect(report.removedComments.length).toBeGreaterThan(0);
     expect(report.removedComments.every(c => c.subreddit === subName )).toBe(true);
+    expect(report.removedSubmissions.length).toBeGreaterThan(0);
     expect(report.removedSubmissions.every(c => c.subreddit === subName)).toBe(true);
   });
 
   it('returns logs only for the specified user', async () => {
     const report = await userReport({ username: 'homer', subreddit: subName, period: '3 months' });
+    expect(report.removedComments.length).toBeGreaterThan(0);
     expect(report.removedComments.every(c => c.author === 'homer')).toBe(true);
+    expect(report.removedSubmissions.length).toBeGreaterThan(0);
     expect(report.removedSubmissions.every(c => c.author === 'homer')).toBe(true);
   });
 
   it('returns logs from after the specified period', async () => {
-    const today = moment().startOf('day');
-    const maxTimestamp = today.unix() * 1000;
+    const maxTimestamp = moment().utc().startOf('day').subtract(2, 'months').unix();
     const report = await userReport({ username: 'marge', subreddit: subName, period: '2 months' });
+    expect(report.removedComments.length).toBeGreaterThan(0);
     expect(report.removedComments.every(c => c.timestamp >= maxTimestamp)).toBe(true);
+    expect(report.removedSubmissions.length).toBeGreaterThan(0);
     expect(report.removedSubmissions.every(c => c.timestamp >= maxTimestamp)).toBe(true);
   });
 

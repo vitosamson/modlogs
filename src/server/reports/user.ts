@@ -28,6 +28,18 @@ interface AggregatedResult {
   logs: ILog[];
 }
 
+interface AggregateGroup {
+  _id: string;
+  count: {
+    $sum: number;
+  };
+  logs: {
+    $addToSet: {
+      [key in keyof ILog]?: string;
+    };
+  };
+}
+
 const logger = getLogger('UserReportGenerator');
 
 export const parseUsername = (username: string): string => {
@@ -55,17 +67,19 @@ export default async function userReport({ username, period, subreddit }: UserRe
     },
   };
 
-  const group = {
+  const group: AggregateGroup = {
     _id: '$action',
     count: {
       $sum: 1,
     },
-    links: {
+    logs: {
       $addToSet: {
         link: '$link',
         title: '$title',
         timestamp: '$timestamp',
         content: '$content',
+        author: '$author',
+        subreddit: '$subreddit',
       },
     },
   };
