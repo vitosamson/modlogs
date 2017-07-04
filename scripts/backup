@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ARCHIVE_FILE=mongodump-$(date +%Y-%m-%d)
+
+cd /tmp
+mongodump --gzip --archive=$ARCHIVE_FILE
+
+aws \
+  --region $GLACIER_BACKUP_REGION \
+  glacier upload-archive \
+  --account-id - \
+  --vault-name $GLACIER_BACKUP_VAULT \
+  --body $ARCHIVE_FILE
+
+rm $ARCHIVE_FILE

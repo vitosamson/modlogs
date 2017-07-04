@@ -1,11 +1,30 @@
 FROM node:7.10.0-alpine
 
-RUN apk add --no-cache vim rsyslog bash
+RUN apk add --no-cache \
+  vim \
+  rsyslog \
+  bash \
+  curl \
+  python \
+  mongodb-tools
+
+# setup aws-cli for db backups to glacier
+WORKDIR /tmp
+RUN curl -O https://bootstrap.pypa.io/get-pip.py
+RUN python get-pip.py --user
+ENV PATH="/root/.local/bin:$PATH"
+RUN pip install awscli --upgrade --user
+
 ADD docker/worker/crontab /tmp/crontab
 RUN crontab /tmp/crontab && rm /tmp/crontab
 
 RUN mkdir /var/log/jobs
-RUN touch /var/log/jobs/subreddits /var/log/jobs/modlogs /var/log/jobs/messages /var/log/cron
+RUN touch \
+  /var/log/jobs/subreddits \
+  /var/log/jobs/modlogs \
+  /var/log/jobs/messages \
+  /var/log/jobs/backup \
+  /var/log/cron
 
 ENV SHELL /bin/bash
 ENV EDITOR /usr/bin/vim

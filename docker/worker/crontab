@@ -9,3 +9,5 @@
 # fetch messages every 5 minutes
 */5 * * * * /usr/local/bin/node -e "require('/app/build/server/jobs/producers/messages').run()" >> /var/log/jobs/messages 2>&1
 
+# backup mongodb every day at midnight
+0 0 * * * /app/scripts/backup >> /var/log/jobs/backup 2>&1

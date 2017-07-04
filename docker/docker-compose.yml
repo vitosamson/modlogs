@@ -25,6 +25,10 @@ services:
       USER_AGENT:
       MONGODB_URI: mongodb://mongo
       REDIS_URL: redis://redis:6379
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      GLACIER_BACKUP_VAULT:
+      GLACIER_BACKUP_REGION:
     links:
       - mongo
       - redis
