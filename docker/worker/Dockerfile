@@ -1,4 +1,4 @@
-FROM node:7.10.0-alpine
+FROM node:8-alpine
 
 RUN apk add --no-cache \
   vim \
