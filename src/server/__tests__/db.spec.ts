@@ -1,6 +1,7 @@
 import { Collection } from 'mongodb';
 import { createMongoQueryFromConfig, createMongoProjectionFromConfig } from '../db';
-import { getSubredditLogsCollection } from '../models/log';
+import { getSubredditLogsCollection, ILog } from '../models/log';
+import { ISubredditModlogConfig } from '../models/subreddit';
 
 describe('createMongoQueryFromConfig', () => {
   it('includes the specified moderators', () => {
@@ -42,8 +43,9 @@ describe('createMongoQueryFromConfig', () => {
 
 describe('createMongoProjectionFromConfig', () => {
   const subreddit = 'projectiontest';
-  const doQuery = (c: any) => collection.aggregate([{ $project: createMongoProjectionFromConfig(c) }]).toArray();
-  const createFilter = (by: string) => (logs: any[]) => logs.filter(l => !!l[by]);
+  const doQuery = (c: ISubredditModlogConfig) =>
+    collection.aggregate([{ $project: createMongoProjectionFromConfig(c) }]).toArray();
+  const createFilter = (by: keyof ILog) => (logs: ILog[]) => logs.filter(l => !!l[by]);
   let collection: Collection;
 
   beforeAll(async () => {
@@ -100,7 +102,7 @@ describe('createMongoProjectionFromConfig', () => {
     expect(filter(logs)).toHaveLength(1);
     expect(filter(logs)[0].link).toEqual('bar');
 
-    logs = await doQuery({ show_submission_links: false, show_comment_lins: false });
+    logs = await doQuery({ show_submission_links: false, show_comment_links: false });
     expect(filter(logs)).toHaveLength(0);
   });
 
@@ -120,7 +122,7 @@ describe('createMongoProjectionFromConfig', () => {
     expect(filter(logs)).toHaveLength(1);
     expect(filter(logs)[0].content).toEqual('bar');
 
-    logs = await doQuery({ show_submission_contents: false, show_comment_conents: false });
+    logs = await doQuery({ show_submission_contents: false, show_comment_contents: false });
     expect(filter(logs)).toHaveLength(0);
   });
 
@@ -139,7 +141,7 @@ describe('createMongoProjectionFromConfig', () => {
     expect(filter(logs)).toHaveLength(1);
     expect(filter(logs)[0].author).toEqual('bar');
 
-    logs = await doQuery({ show_submission_author: false, show_comment_autor: false });
+    logs = await doQuery({ show_submission_author: false, show_comment_author: false });
     expect(filter(logs)).toHaveLength(0);
   });
 
@@ -161,5 +163,46 @@ describe('createMongoProjectionFromConfig', () => {
 
     logs = await doQuery({ show_moderator_name: false });
     expect(logs[0].mod).toBeNull();
+  });
+
+  it('ban user', async () => {
+    await collection.insertMany([
+      { action: 'banuser', author: 'foo' },
+      { action: 'unbanuser', author: 'bar' },
+    ]);
+
+    let logs = await doQuery({ show_ban_user: true });
+    expect(logs[0].author).toEqual('foo');
+    expect(logs[1].author).toEqual('bar');
+
+    logs = await doQuery({ show_ban_user: false });
+    expect(logs[0].author).toBeNull();
+    expect(logs[1].author).toBeNull();
+  });
+
+  it('ban duration', async () => {
+    // there's no duration for an unbanuser, so we only need to test banuser here
+    await collection.insert({ action: 'banuser', details: '2 days' });
+
+    let logs = await doQuery({ show_ban_duration: true });
+    expect(logs[0].details).toEqual('2 days');
+
+    logs = await doQuery({ show_ban_duration: false });
+    expect(logs[0].details).toBeNull();
+  });
+
+  it('ban description', async () => {
+    await collection.insertMany([
+      { action: 'banuser', description: 'bot' },
+      { action: 'unbanuser', description: 'was temporary' },
+    ]);
+
+    let logs = await doQuery({ show_ban_description: true });
+    expect(logs[0].description).toEqual('bot');
+    expect(logs[1].description).toEqual('was temporary');
+
+    logs = await doQuery({ show_ban_description: false });
+    expect(logs[0].description).toBeNull();
+    expect(logs[1].description).toBeNull();
   });
 });

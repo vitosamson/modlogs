@@ -66,6 +66,20 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
     ],
   };
 
+  const isBanOrUnbanCondition = {
+    $or: [
+      { $eq: ['$action', 'banuser'] },
+      { $eq: ['$action', 'unbanuser'] },
+    ],
+  };
+
+  const isNotBanOrUnbanCondition = {
+    $and: [
+      { $ne: ['$action', 'banuser'] },
+      { $ne: ['$action', 'unbanuser'] },
+    ],
+  };
+
   return {
     // I'd prefer not to return the db _id, but it's necessary since we need the _id
     // when determining hasBefore/hasAfter in the /logs handler
@@ -75,10 +89,34 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
     timestamp: 1,
     action: 1,
     redditId: 1,
-    details: 1,
-    description: 1,
     isComment: 1,
     isSubmission: 1,
+    details: {
+      $cond: [{
+        $or: [
+          {
+            $and: [
+              config.show_ban_duration,
+              isBanOrUnbanCondition,
+            ],
+          },
+          isNotBanOrUnbanCondition,
+        ],
+      }, '$details', null],
+    },
+    description: {
+      $cond: [{
+        $or: [
+          {
+            $and: [
+              config.show_ban_description,
+              isBanOrUnbanCondition,
+            ],
+          },
+          isNotBanOrUnbanCondition,
+        ],
+      }, '$description', null],
+    },
     submissionId: {
       $cond: [linkCondition, '$submissionId', null],
     },
@@ -107,6 +145,11 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
           $and: [
             config.show_comment_author,
             { $eq: ['$isComment', true] },
+          ],
+        }, {
+          $and: [
+            config.show_ban_user,
+            isBanOrUnbanCondition,
           ],
         }],
       }, '$author', null],

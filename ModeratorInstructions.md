@@ -47,6 +47,15 @@ show_submission_title: false
 # show the name of the moderator who performed the action
 show_moderator_name: false
 
+# show the name of the user who was banned or unbanned
+show_ban_user: true
+
+# show the duration of a ban
+show_ban_duration: true
+
+# show the internal mod note on the ban
+show_ban_description: false
+
 # a comma-separated list of actions to include or exclude. include takes precedence.
 # by default all actions are included, see below for available actions
 include_actions: []

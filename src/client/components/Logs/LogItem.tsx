@@ -92,7 +92,7 @@ const noContent = '[contents unavailable]';
 class LogContents extends React.PureComponent<{ log: ILog }, null> {
   public render() {
     const { log } = this.props;
-    let content;
+    let body;
     let title;
     let author;
 
@@ -101,26 +101,40 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
       case 'removecomment':
       case 'distinguish':
       case 'sticky':
-        content = <blockquote dangerouslySetInnerHTML={{ __html: mdToHtml(log.content || noContent) }} />;
+        body = <blockquote dangerouslySetInnerHTML={{ __html: mdToHtml(log.content || noContent) }} />;
         author = log.author;
         break;
       case 'approvelink':
       case 'removelink':
-        content = <blockquote dangerouslySetInnerHTML={{ __html: mdToHtml(log.content || noContent) }} />;
+        body = <blockquote dangerouslySetInnerHTML={{ __html: mdToHtml(log.content || noContent) }} />;
         author = log.author;
         title = log.title;
         break;
       case 'wikirevise':
-        content = <span>{ log.details }</span>;
+        body = <span>{ log.details }</span>;
+        break;
+      case 'banuser':
+      case 'unbanuser':
+        if (!log.author && !log.details && !log.description) {
+          body = noContent;
+        } else {
+          body = (
+            <div>
+              { log.author && <div><strong>User: </strong>{ log.author }</div> }
+              { log.details && <div><strong>Duration: </strong>{ log.details }</div> }
+              { log.description && <div><strong>Description: </strong>{ log.description }</div> }
+            </div>
+          );
+        }
         break;
       default:
-        content = <span>No additional details available</span>;
+        body = <span>No additional details available</span>;
     }
 
     return (
       <div className="panel-body contents">
         { title && <h5 className="title">{ title }</h5> }
-        { content }
+        <div className="body">{ body }</div>
         { author &&
           <div className="author">
             - <ExternalLink to={log.author} type="user">/u/{ log.author }</ExternalLink>
@@ -128,7 +142,9 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
         }
 
         { process.env.NODE_ENV === 'development' &&
-          <div className="reddit-id">{ log.redditId }<br/>{ log._id.toString() }</div>
+          <div className="reddit-id" style={{ marginTop: 10, fontSize: '0.8em' }}>
+            { log.redditId }<br/>{ log._id.toString() }
+          </div>
         }
       </div>
     );

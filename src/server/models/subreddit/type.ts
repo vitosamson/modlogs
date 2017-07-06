@@ -21,6 +21,9 @@ export interface ISubredditModlogConfig {
   show_submission_author?: boolean;
   show_submission_title?: boolean;
   show_moderator_name?: boolean;
+  show_ban_user?: boolean;
+  show_ban_duration?: boolean;
+  show_ban_description?: boolean;
   include_actions?: string[];
   exclude_actions?: string[];
   include_moderators?: string[];
