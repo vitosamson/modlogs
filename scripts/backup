@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/bash -e
 
 ARCHIVE_FILE=mongodump-$(date +%Y-%m-%d)
 
 cd /tmp
-mongodump --gzip --archive=$ARCHIVE_FILE
+mongodump --gzip --archive=$ARCHIVE_FILE -h mongo
 
 aws \
   --region $GLACIER_BACKUP_REGION \
