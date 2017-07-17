@@ -28,9 +28,10 @@ export async function fetchSubreddits() {
   await Promise.all(newSubreddits.map(async sub => {
     try {
       const subredditConfig = await reddit.getSubredditConfig(sub.name);
+      const moderators = (await reddit.getSubredditModerators(sub.name)).map(user => user.name);
       const { matchedCount } = await subredditsCollection.updateOne(
         { name: sub.name },
-        { ...sub, modlogConfig: subredditConfig },
+        { ...sub, modlogConfig: subredditConfig, moderators },
         { upsert: true }
       );
       if (matchedCount) {

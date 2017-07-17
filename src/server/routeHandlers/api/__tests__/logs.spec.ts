@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { getSubredditLogsCollection } from '../../../models/log';
 import { getMySubredditsCollection, ISubredditModlogConfig } from '../../../models/subreddit';
-import logsApi from '../logs';
+import { logs as logsApi } from '../logs';
 
 describe('/api/logs', () => {
   const subreddit = 'logsApiTest';
@@ -27,6 +27,7 @@ describe('/api/logs', () => {
 
   afterAll(async () => {
     await (await getSubredditLogsCollection(subreddit)).remove({});
+    await (await getMySubredditsCollection()).remove({});
   });
 
   it('returns the logs', async () => {
@@ -88,10 +89,10 @@ describe('/api/logs', () => {
     expect(after).toBeNull();
   });
 
-  describe('query.filter', () => {
+  describe('query.link', () => {
     it('by commentId with show_comment_links=false', async () => {
       await updateConfig({ show_comment_links: false });
-      const { logs, before, after } = await logsApi(subreddit, { filter: `/r/${subreddit}/comments/foo/_/1`});
+      const { logs, before, after } = await logsApi(subreddit, { link: `/r/${subreddit}/comments/foo/_/1`});
       expect(logs).toHaveLength(0);
       expect(before).toBeNull();
       expect(after).toBeNull();
@@ -99,7 +100,7 @@ describe('/api/logs', () => {
 
     it('by commentId with show_comment_links=true', async () => {
       await updateConfig({ show_comment_links: true });
-      const { logs, before, after } = await logsApi(subreddit, { filter: `/r/${subreddit}/comments/foo/_/1` });
+      const { logs, before, after } = await logsApi(subreddit, { link: `/r/${subreddit}/comments/foo/_/1` });
       expect(logs).toHaveLength(1);
       expect(logs[0].redditId).toEqual('4');
       expect(before).toBeNull();
@@ -108,7 +109,7 @@ describe('/api/logs', () => {
 
     it('by submissionId with show_submission_links=false', async () => {
       await updateConfig({ show_submission_links: false });
-      const { logs, before, after } = await logsApi(subreddit, { filter: `/r/${subreddit}/comments/1` });
+      const { logs, before, after } = await logsApi(subreddit, { link: `/r/${subreddit}/comments/1` });
       expect(logs).toHaveLength(0);
       expect(before).toBeNull();
       expect(after).toBeNull();
@@ -116,11 +117,62 @@ describe('/api/logs', () => {
 
     it('by submissionId with show_submission_links=true', async () => {
       await updateConfig({ show_submission_links: true });
-      const { logs, before, after } = await logsApi(subreddit, { filter: `/r/${subreddit}/comments/1` });
+      const { logs, before, after } = await logsApi(subreddit, { link: `/r/${subreddit}/comments/1` });
       expect(logs).toHaveLength(1);
       expect(logs[0].redditId).toEqual('2');
       expect(before).toBeNull();
       expect(after).toBeNull();
+    });
+  });
+
+  describe('query.author', () => {
+    beforeAll(async () => {
+      await (await getSubredditLogsCollection(subreddit)).insertMany([
+        { subreddit, author: 'theuser', content: 'foo' },
+      ]);
+    });
+
+    it('authenticated mod', async () => {
+      // make sure it does a case-insensitive search
+      const { logs } = await logsApi(subreddit, { author: 'TheUser' }, true);
+      expect(logs).toHaveLength(1);
+    });
+
+    it('unauthenticated', async () => {
+      const { logs } = await logsApi(subreddit, { author: 'TheUser'}, false);
+      expect(logs).not.toHaveLength(1);
+    });
+
+    it('works when the username is prepended by /u/ or u/', async () => {
+      let { logs } = await logsApi(subreddit, { author: '/u/TheUser' }, true);
+      expect(logs).toHaveLength(1);
+      logs = (await logsApi(subreddit, { author: 'u/theUser' }, true)).logs;
+      expect(logs).toHaveLength(1);
+    });
+  });
+
+  describe('query.mod', () => {
+    beforeAll(async () => {
+      await (await getSubredditLogsCollection(subreddit)).insertMany([
+        { subreddit, mod: 'themod' },
+      ]);
+    });
+
+    it('authenticated mod', async () => {
+      const { logs } = await logsApi(subreddit, { mod: 'TheMod' }, true);
+      expect(logs).toHaveLength(1);
+    });
+
+    it('unauthenticated', async () => {
+      const { logs } = await logsApi(subreddit, { mod: 'TheMod' }, false);
+      expect(logs).not.toHaveLength(1);
+    });
+
+    it('works when the username is prepended by /u/ or u/', async () => {
+      let { logs } = await logsApi(subreddit, { mod: '/u/theMod' }, true);
+      expect(logs).toHaveLength(1);
+      logs = (await logsApi(subreddit, { mod: 'u/Themod' }, true)).logs;
+      expect(logs).toHaveLength(1);
     });
   });
 });

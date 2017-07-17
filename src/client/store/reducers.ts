@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { loadingBarReducer } from 'react-redux-loading-bar';
 import { ISubreddit } from '../../server/models/subreddit/type';
 import logsReducer, { ILogsState } from '../components/Logs/reducer';
+import { FETCH_LOGS_SUCCESS, FetchLogsSuccessAction } from '../components/Logs/actions';
 import { FETCH_SUBREDDITS_FINISH, FetchSubredditsAction } from './actions';
 import subredditsApi from '../api/subreddits';
 import logsApi from '../api/logs';
@@ -10,6 +11,8 @@ import logApi from '../api/log';
 export interface AppState {
   fetchingSubreddits: boolean;
   subreddits: ISubreddit[];
+  isAuthenticatedMod: boolean;
+  username: string;
 
   /**
    * during server-rendering, the server injects the actual route handlers here,
@@ -32,6 +35,8 @@ export interface StoreState {
 const initialAppState: AppState = {
   fetchingSubreddits: true,
   subreddits: [],
+  isAuthenticatedMod: false,
+  username: null,
 
   /**
    * after the serverside render is complete, it will delete state.app.api so we can replace it with
@@ -44,15 +49,21 @@ const initialAppState: AppState = {
   },
 };
 
-type Action = FetchSubredditsAction;
+type Action = FetchSubredditsAction | FetchLogsSuccessAction;
 
 export const app = (state: AppState = initialAppState, action: Action): AppState => {
   switch (action.type) {
     case FETCH_SUBREDDITS_FINISH:
       return {
         ...state,
-        subreddits: action.subreddits,
+        subreddits: (action as FetchSubredditsAction).subreddits,
         fetchingSubreddits: false,
+      };
+
+    case FETCH_LOGS_SUCCESS:
+      return {
+        ...state,
+        isAuthenticatedMod: (action as FetchLogsSuccessAction).logs.isAuthenticatedMod,
       };
 
     default:

@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import userReport, { parseUsername } from '../user';
+import userReport from '../user';
 import { getSubredditLogsCollection } from '../../models/log';
 import { createMockLogs } from './mockLogs';
 
@@ -50,11 +50,5 @@ describe('User Report Generator', () => {
   it('returns the humanized period', async () => {
     const report = await userReport({ username: 'bart', subreddit: subName, period: '2 m' });
     expect(report.parsedPeriod).toEqual('2 months');
-  });
-
-  it('correctly parses the username', () => {
-    expect(parseUsername('foo')).toEqual('foo');
-    expect(parseUsername('/u/foo')).toEqual('foo');
-    expect(parseUsername('u/foo')).toEqual('foo');
   });
 });

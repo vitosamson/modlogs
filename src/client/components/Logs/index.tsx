@@ -5,16 +5,18 @@ import { RouteComponentProps } from 'react-router';
 import LogItem, { LogItemProps } from './LogItem';
 import { ILog } from '../../../server/models/log/type';
 
-interface Props extends LogItemProps {
+export interface LogsProps extends LogItemProps {
   logs: ILog[];
   fetching: boolean;
-  onChangeFilter: (filter: string) => void;
+  onChangeLinkFilter: (filter: string) => void;
+  onChangeAuthorFilter: (filter: string) => void;
+  isAuthenticatedMod: boolean;
 }
 
-type LogsProps = Props & RouteComponentProps<any, any>;
+type Props = LogsProps & RouteComponentProps<any, any>;
 
-class Logs extends React.PureComponent<LogsProps, null> {
-  public componentWillReceiveProps(nextProps: Props) {
+class Logs extends React.PureComponent<Props, null> {
+  public componentWillReceiveProps(nextProps: LogsProps) {
     // scroll to the top of the logs container when we receive new logs
     if (nextProps.logs !== this.props.logs) {
       const node = findDOMNode(this);
@@ -24,7 +26,7 @@ class Logs extends React.PureComponent<LogsProps, null> {
   }
 
   public render() {
-    const { logs, fetching, onChangeFilter } = this.props;
+    const { logs, fetching, onChangeLinkFilter, onChangeAuthorFilter, isAuthenticatedMod } = this.props;
 
     if (!fetching && !logs.length) {
       return <h4 className="text-center">No logs were found :(</h4>;
@@ -33,7 +35,15 @@ class Logs extends React.PureComponent<LogsProps, null> {
     return (
       <div>
         { logs.map(log => {
-          return <LogItem onChangeFilter={onChangeFilter} log={log} key={log._id} />;
+          return (
+            <LogItem
+              onChangeLinkFilter={onChangeLinkFilter}
+              onChangeAuthorFilter={onChangeAuthorFilter}
+              isAuthenticatedMod={isAuthenticatedMod}
+              log={log}
+              key={log._id}
+            />
+          );
         })}
       </div>
     );
@@ -43,4 +53,5 @@ class Logs extends React.PureComponent<LogsProps, null> {
 export default connect(state => ({
   logs: state.logs.logs,
   fetching: state.logs.fetching,
+  isAuthenticatedMod: state.app.isAuthenticatedMod,
 }))(Logs);

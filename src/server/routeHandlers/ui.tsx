@@ -16,18 +16,20 @@ import { initialState as initialLogsState } from '../../client/components/Logs/r
 import Root from '../../client/containers/Root';
 import routes from '../../client/routes';
 
-import subredditsHandler from './api/subreddits';
-import logsHandler from './api/logs';
-import logHandler from './api/log';
+import { subreddits as subredditsHandler } from './api/subreddits';
+import { logs as logsHandler, ILogsQuery } from './api/logs';
+import { log as logHandler } from './api/log';
+import { AuthenticatedRequest } from './modLoginMiddleware';
 
-const htmlTpl = readFileSync(resolve(__dirname, '../../client/index.tpl.html')).toString();
+const htmlTplFilePath = resolve('build/client/index.tpl.html');
+const htmlTpl = readFileSync(htmlTplFilePath).toString();
 
 interface LoadedProps {
   asyncProps: any;
   scriptTag: string;
 }
 
-export default async function renderUi(req: express.Request, res: express.Response) {
+export default async function renderUi(req: AuthenticatedRequest, res: express.Response) {
   match({ routes, location: req.url }, async (error, redirectLocation, renderProps) => {
     if (error) {
       res.status(500).send(error.message);
@@ -39,10 +41,14 @@ export default async function renderUi(req: express.Request, res: express.Respon
         app: {
           fetchingSubreddits: false,
           subreddits: [],
+          isAuthenticatedMod: req.__isAuthenticatedMod,
+          username: req.__user,
           api: {
             subreddits: subredditsHandler,
-            logs: logsHandler,
-            log: logHandler,
+            logs: (subredditName: string, query: ILogsQuery) =>
+              logsHandler(subredditName, query, req.__isAuthenticatedMod),
+            log: (subredditName: string, redditLogId: string) =>
+              logHandler(subredditName, redditLogId, req.__isAuthenticatedMod),
           },
         },
       };

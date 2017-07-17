@@ -47,6 +47,12 @@ export function getThingIdsFromLink(link: string): ThingIds {
   };
 }
 
+// extract a username from /u/username or u/username
+export const parseUsername = (username: string): string => {
+  const match: string[] = /(?:u\/)?(\w+)/.exec(username) || [];
+  return match[1] || username;
+};
+
 // override snoowrap's rawRequest so we can record the reddit api requests
 class SnoowrapWithMetrics extends Snoowrap {
   public rawRequest(options: any): Promise<any> {

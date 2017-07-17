@@ -41,7 +41,9 @@ export default (state: ILogsState = initialState, action: Action): ILogsState =>
       return {
         ...state,
         fetching: false,
-        ...action.logs,
+        logs: action.logs.logs,
+        before: action.logs.before,
+        after: action.logs.after,
       };
 
     case FETCH_LOGS_ERROR:

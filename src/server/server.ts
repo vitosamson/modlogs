@@ -1,48 +1,26 @@
 import { resolve } from 'path';
-import { inspect } from 'util';
 import * as express from 'express';
 import * as expressWinston from 'express-winston';
 import * as compress from 'compression';
+import * as cookies from 'cookie-parser';
 
 import getLogger from './logger';
 import { connectDb, DBNames } from './db';
 import renderUi from './routeHandlers/ui';
 import subreddits from './routeHandlers/api/subreddits';
-import logs, { noLogs } from './routeHandlers/api/logs';
+import logs from './routeHandlers/api/logs';
 import log from './routeHandlers/api/log';
 import info from './routeHandlers/info';
+import modLoginMiddleware from './routeHandlers/modLoginMiddleware';
 
 const logger = getLogger('server');
 const app = express();
 const apiRouter = express.Router();
 const port = process.env.PORT || 4245;
 
-apiRouter.get('/subreddits', async (req, res) => {
-  try {
-    res.json(await subreddits());
-  } catch (err) {
-    logger.error(inspect(err));
-    res.json([]);
-  }
-});
-
-apiRouter.get('/r/:subreddit/logs', async (req, res) => {
-  try {
-    res.json(await logs(req.params.subreddit, req.query));
-  } catch (err) {
-    logger.error(inspect(err));
-    res.json(noLogs);
-  }
-});
-
-apiRouter.get('/r/:subreddit/logs/:redditLogId', async (req, res) => {
-  try {
-    res.json(await log(req.params.subreddit, req.params.redditLogId));
-  } catch (err) {
-    logger.error(inspect(err));
-    res.status(404).send(err.message);
-  }
-});
+apiRouter.get('/subreddits', subreddits);
+apiRouter.get('/r/:subreddit/logs', modLoginMiddleware, logs);
+apiRouter.get('/r/:subreddit/logs/:redditLogId', modLoginMiddleware, log);
 
 app.use(expressWinston.logger({
   winstonInstance: logger,
@@ -50,11 +28,13 @@ app.use(expressWinston.logger({
 }));
 
 app.use(compress());
+app.use(cookies());
 app.use('/assets', express.static(resolve('build/assets')));
 app.get('/favicon.ico', (req, res) => res.status(200).send());
 app.use('/api', apiRouter);
 app.get('/info', info);
-app.use(renderUi);
+app.get('/r/:subreddit\*', modLoginMiddleware, renderUi);
+app.get('*', modLoginMiddleware, renderUi);
 
 app.use(expressWinston.errorLogger({
   winstonInstance: logger,
@@ -64,6 +44,7 @@ app.use(expressWinston.errorLogger({
   await connectDb(DBNames.logs);
   await connectDb(DBNames.internal);
   app.listen(port, () => {
+    logger.info('NODE_ENV:', process.env.NODE_ENV || 'development');
     logger.info(`listening at http://localhost:${port}`);
   });
 })();

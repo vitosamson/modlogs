@@ -1,0 +1,26 @@
+upstream login_app {
+  server login:3000;
+}
+
+server {
+  listen 80;
+  server_name login.modlogs.fyi;
+
+  location /reddit {
+    proxy_pass http://login_app;
+  }
+
+  location /reddit/callback {
+    proxy_pass http://login_app;
+    proxy_cookie_domain ~ modlogs.fyi;
+  }
+
+  location /logout {
+    proxy_pass http://login_app;
+    proxy_cookie_domain ~ modlogs.fyi;
+  }
+
+  location / {
+    proxy_pass http://login_app/reddit;
+  }
+}

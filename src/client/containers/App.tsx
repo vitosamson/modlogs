@@ -39,11 +39,16 @@ export default class App extends React.Component<AppProps, null> {
   }
 
   public render() {
-    const { children, params } = this.props;
+    const { children, params, location } = this.props;
 
     return (
       <StickyContainer className="app-container">
-        <Header currentSubreddit={params.subreddit} onSelectSubreddit={this.changeSubreddit} />
+        <Header
+          currentSubreddit={params.subreddit}
+          onSelectSubreddit={this.changeSubreddit}
+          currentPath={`${location.pathname}${location.search}`}
+        />
+
         <Sticky topOffset={43}>
           {({ style }: { style: any }) => {
             delete style.width; // don't let sticky override the loader's width

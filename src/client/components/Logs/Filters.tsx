@@ -5,19 +5,26 @@ import './filters.scss';
 
 interface Props {
   limit: string;
-  currentFilter: string;
+  currentLinkFilter: string;
+  currentAuthorFilter: string;
+  currentModFilter: string;
   currentActions: string;
   currentType?: string;
   onChangeLimit: (limit: string) => void;
-  onChangeFilter: (filter: string) => void;
+  onChangeLinkFilter: (filter: string) => void;
+  onChangeAuthorFilter: (filter: string) => void;
+  onChangeModFilter: (filter: string) => void;
   onChangeActions: (actions: string[]) => void;
   onChangeType: (type: string | null) => void;
   onClearFilters: () => void;
   disableFilters?: boolean;
+  isAuthenticatedMod: boolean;
 }
 
 interface State {
-  filter: string;
+  linkFilter: string;
+  authorFilter: string;
+  modFilter: string;
   actionsSectionOpen: boolean;
 }
 
@@ -29,13 +36,29 @@ const splitActions = (actions: string): string[] => {
 
 export default class LogFilters extends React.PureComponent<Props, State> {
   public state = {
-    filter: this.props.currentFilter || '',
-    actionsSectionOpen: false,
+    linkFilter: this.props.currentLinkFilter || '',
+    authorFilter: this.props.currentAuthorFilter || '',
+    modFilter: this.props.currentModFilter || '',
+    actionsSectionOpen: !!this.props.currentActions,
   };
 
   public componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.currentFilter !== this.state.filter) {
-      this.setState({ filter: nextProps.currentFilter });
+    const nextState: Partial<State> = {};
+
+    if (nextProps.currentLinkFilter !== this.state.linkFilter) {
+      nextState.linkFilter = nextProps.currentLinkFilter;
+    }
+
+    if (nextProps.currentAuthorFilter !== this.state.authorFilter) {
+      nextState.authorFilter = nextProps.currentAuthorFilter;
+    }
+
+    if (nextProps.currentModFilter !== this.state.modFilter) {
+      nextState.modFilter = nextProps.currentModFilter;
+    }
+
+    if (Object.keys(nextState).length) {
+      this.setState(() => nextState);
     }
   }
 
@@ -43,13 +66,43 @@ export default class LogFilters extends React.PureComponent<Props, State> {
     this.props.onChangeLimit(limit);
   }
 
-  private handleFilterChange = (evt: React.ChangeEvent<any>) => {
-    this.setState({ filter: evt.target.value });
+  private handleLinkFilterChange = (evt: React.ChangeEvent<any>) => {
+    this.setState({ linkFilter: evt.target.value });
   }
 
-  private submitFilterChange = (evt?: React.FormEvent<any>) => {
+  private submitLinkFilterChange = (evt?: React.FormEvent<any>) => {
     if (evt) evt.preventDefault();
-    this.props.onChangeFilter(this.state.filter);
+    this.props.onChangeLinkFilter(this.state.linkFilter);
+  }
+
+  private clearLinkFilter = () => {
+    this.setState({ linkFilter: '' }, this.submitLinkFilterChange);
+  }
+
+  private handleAuthorFilterChange = (evt: React.ChangeEvent<any>) => {
+    this.setState({ authorFilter: evt.target.value });
+  }
+
+  private submitAuthorFilterChange = (evt?: React.FormEvent<any>) => {
+    if (evt) evt.preventDefault();
+    this.props.onChangeAuthorFilter(this.state.authorFilter);
+  }
+
+  private clearAuthorFilter = () => {
+    this.setState({ authorFilter: '' }, this.submitAuthorFilterChange);
+  }
+
+  private handleModFilterChange = (evt: React.ChangeEvent<any>) => {
+    this.setState({ modFilter: evt.target.value });
+  }
+
+  private submidModFilterChange = (evt?: React.ChangeEvent<any>) => {
+    if (evt) evt.preventDefault();
+    this.props.onChangeModFilter(this.state.modFilter);
+  }
+
+  private clearModFilter = () => {
+    this.setState({ modFilter: '' }, this.submidModFilterChange);
   }
 
   private handleActionSelect = (action: string) => {
@@ -78,9 +131,20 @@ export default class LogFilters extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const { limit, currentFilter, onClearFilters, currentType, disableFilters } = this.props;
-    const { filter, actionsSectionOpen } = this.state;
+    const {
+      limit,
+      currentLinkFilter,
+      currentAuthorFilter,
+      currentModFilter,
+      onClearFilters,
+      currentType,
+      disableFilters,
+      isAuthenticatedMod,
+    } = this.props;
+
+    const { linkFilter, authorFilter, modFilter, actionsSectionOpen } = this.state;
     const currentActions = splitActions(this.props.currentActions);
+    const canClearFilters = currentLinkFilter || currentAuthorFilter || currentModFilter || currentActions.length > 0;
 
     let displayType;
     switch (currentType) {
@@ -94,7 +158,7 @@ export default class LogFilters extends React.PureComponent<Props, State> {
         <div className="panel-heading">
           <h3 className="panel-title">Filters</h3>
 
-          { (currentFilter || currentActions.length > 0) &&
+          { canClearFilters &&
             <div className="clear-filters" onClick={onClearFilters}>
               clear filters
             </div>
@@ -111,7 +175,7 @@ export default class LogFilters extends React.PureComponent<Props, State> {
               onSelect={this.handleLimitChange}
               disabled={disableFilters}
             >
-              {limits.map(l => (
+              { limits.map(l => (
                 <MenuItem eventKey={l} key={l}>{l}</MenuItem>
               ))}
             </DropdownButton>
@@ -131,24 +195,42 @@ export default class LogFilters extends React.PureComponent<Props, State> {
             </DropdownButton>
           </div>
 
-          <form onSubmit={this.submitFilterChange}>
-            <FormGroup>
-              <InputGroup>
-                <FormControl
-                  placeholder="filter by post or comment link"
-                  type="text"
-                  onChange={this.handleFilterChange}
-                  value={filter}
-                  disabled={disableFilters}
-                />
-                <InputGroup.Button>
-                  <Button type="submit">
-                    <i className="fa fa-search" />
-                  </Button>
-                </InputGroup.Button>
-              </InputGroup>
-            </FormGroup>
-          </form>
+          <FilterField
+            localValue={linkFilter}
+            actualValue={currentLinkFilter}
+            onChange={this.handleLinkFilterChange}
+            onSubmit={this.submitLinkFilterChange}
+            disabled={disableFilters}
+            label="link"
+            onClear={this.clearLinkFilter}
+            placeholder="filter by post or comment link"
+          />
+
+          { isAuthenticatedMod &&
+            <div>
+              <FilterField
+                localValue={authorFilter}
+                actualValue={currentAuthorFilter}
+                onChange={this.handleAuthorFilterChange}
+                onSubmit={this.submitAuthorFilterChange}
+                disabled={disableFilters}
+                label="author"
+                onClear={this.clearAuthorFilter}
+                placeholder="filter by author"
+              />
+
+              <FilterField
+                localValue={modFilter}
+                actualValue={currentModFilter}
+                onChange={this.handleModFilterChange}
+                onSubmit={this.submidModFilterChange}
+                disabled={disableFilters}
+                label="moderator"
+                placeholder="filter by moderator"
+                onClear={this.clearModFilter}
+              />
+            </div>
+          }
 
           <h5 onClick={this.toggleActionsSection} className={`toggle-actions ${actionsSectionOpen ? 'is-open' : ''}`}>
             Filter by action type
@@ -199,7 +281,57 @@ const ActionType = ({ type, selected, onSelect, className, disabled }: ActionTyp
         style={{ marginRight: 5 }}
         disabled={disabled}
       />
-      {type.label}
+      { type.label }
     </label>
   );
 };
+
+interface FilterFieldProps {
+  onSubmit: (evt: React.SyntheticEvent<any>) => void;
+  disabled: boolean;
+  localValue?: string; // the value stored in local state while editing
+  actualValue?: string; // the value from the route query param
+  onChange: (evt: React.ChangeEvent<any>) => void;
+  placeholder: string;
+  label: string;
+  onClear: () => void;
+}
+
+class FilterField extends React.PureComponent<FilterFieldProps, null> {
+  private clearFilter = () => {
+    const { disabled, onClear } = this.props;
+    if (!disabled) onClear();
+  }
+
+  public render() {
+    const { onSubmit, disabled, actualValue, localValue, label, placeholder, onChange } = this.props;
+
+    return (
+      <form onSubmit={onSubmit} className="filter-field">
+        <fieldset disabled={disabled}>
+          <FormGroup>
+            <InputGroup>
+              { actualValue &&
+                <InputGroup.Addon>
+                  { label }
+                  <span onClick={this.clearFilter} className="clear-filter"> &times;</span>
+                </InputGroup.Addon>
+              }
+              <FormControl
+                placeholder={placeholder}
+                type="text"
+                onChange={onChange}
+                value={localValue}
+              />
+              <InputGroup.Button>
+                <Button type="submit">
+                  <i className="fa fa-search" />
+                </Button>
+              </InputGroup.Button>
+            </InputGroup>
+          </FormGroup>
+        </fieldset>
+      </form>
+    );
+  }
+}

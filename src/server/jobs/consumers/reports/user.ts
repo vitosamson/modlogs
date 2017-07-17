@@ -1,6 +1,7 @@
 import reddit from '../../../reddit';
 import getLogger from '../../../logger';
-import userReport, { parseUsername } from '../../../reports/user';
+import { parseUsername } from '../../../reddit';
+import userReport from '../../../reports/user';
 import { createMarkdownTable } from '../../../utils';
 
 export interface UserReportRequestParams {

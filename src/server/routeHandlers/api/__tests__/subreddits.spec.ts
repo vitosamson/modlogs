@@ -1,5 +1,5 @@
 import { getMySubredditsCollection } from '../../../models/subreddit';
-import subredditsApi from '../subreddits';
+import { subreddits as subredditsApi } from '../subreddits';
 
 describe('/api/subreddits', () => {
   beforeAll(async () => {
@@ -7,6 +7,7 @@ describe('/api/subreddits', () => {
     await collection.insert({
       name: 'foo',
       modlogConfig: { show_comment_links: false },
+      moderators: ['user'],
     });
   });
 
@@ -16,6 +17,11 @@ describe('/api/subreddits', () => {
 
   it('does not return the modlog configs for the subreddits', async () => {
     const subreddits = await subredditsApi();
-    expect((subreddits[0] as any).modlogConfig).toBeUndefined();
+    expect(subreddits[0].modlogConfig).toBeUndefined();
+  });
+
+  it('does not return the list of moderators', async () => {
+    const subreddits = await subredditsApi();
+    expect(subreddits[0].moderators).toBeUndefined();
   });
 });

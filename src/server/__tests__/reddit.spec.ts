@@ -1,4 +1,4 @@
-import { isComment, isSubmission, getThingIdsFromLink } from '../reddit';
+import { isComment, isSubmission, getThingIdsFromLink, parseUsername } from '../reddit';
 
 describe('reddit', () => {
   it('isComment', () => {
@@ -43,5 +43,11 @@ describe('reddit', () => {
       submissionId: null,
       commentId: null,
     });
+  });
+
+  it('parseUsername', () => {
+    expect(parseUsername('foo')).toEqual('foo');
+    expect(parseUsername('/u/foo')).toEqual('foo');
+    expect(parseUsername('u/foo')).toEqual('foo');
   });
 });

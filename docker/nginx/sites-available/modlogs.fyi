@@ -1,0 +1,12 @@
+upstream web_app {
+  server web:3000;
+}
+
+server {
+  listen 80;
+  server_name modlogs.fyi www.modlogs.fyi;
+
+  location ~ / {
+    proxy_pass http://web_app;
+  }
+}

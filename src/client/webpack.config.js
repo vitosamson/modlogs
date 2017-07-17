@@ -36,6 +36,8 @@ if (isDevelopment) {
       fs.writeFileSync(
         path.resolve('../../build/client/index.tpl.html'),
         htmlTpl
+          .replace('__app_css__', '')
+          .replace('__vendor_js__', '')
           .replace('__app_js__', `/${appJs}`)
           .replace('__webpack_manifest__', '')
       );

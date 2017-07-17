@@ -11,6 +11,7 @@ import SubredditInfo from '../components/SubredditInfo';
 import { LoadPropsArgs, LoadPropsCb } from '../types';
 import shallowEqual from '../utils/shallowEqual';
 import { ISubreddit } from '../../server/models/subreddit/type';
+import { ILogsQuery } from '../api/logs';
 import './logs.scss';
 
 interface Params {
@@ -23,6 +24,7 @@ interface Props extends ILogsState, RouteComponentProps<Params, any> {
   limit: string;
   fetchLogs: typeof actions.fetchLogs;
   children: React.ReactElement<any>;
+  isAuthenticatedMod: boolean;
 }
 
 class LogsContainer extends React.PureComponent<Props, null> {
@@ -53,7 +55,7 @@ class LogsContainer extends React.PureComponent<Props, null> {
     }
   }
 
-  private updateRouteQuery = (updatedQuery: any) => {
+  private updateRouteQuery = (updatedQuery: { [key in keyof ILogsQuery]?: string }) => {
     const { router, params: { subreddit }, location } = this.props;
     router.push({
       pathname: `/r/${subreddit}`,
@@ -70,13 +72,33 @@ class LogsContainer extends React.PureComponent<Props, null> {
     this.updateRouteQuery({ limit: nextLimit });
   }
 
-  public changeFilter = (nextFilter: string) => {
+  public changeLinkFilter = (nextFilter: string) => {
     const { location: { query } } = this.props;
-    if (nextFilter === query.filter) return;
+    if (nextFilter === query.link) return;
     this.updateRouteQuery({
       before: undefined,
       after: undefined,
-      filter: nextFilter || undefined,
+      link: nextFilter || undefined,
+    });
+  }
+
+  public changeAuthorFilter = (nextFilter: string) => {
+    const { location: { query } } = this.props;
+    if (nextFilter === query.author) return;
+    this.updateRouteQuery({
+      before: undefined,
+      after: undefined,
+      author: nextFilter || undefined,
+    });
+  }
+
+  public changeModFilter = (nextFilter: string) => {
+    const { location: { query } } = this.props;
+    if (nextFilter === query.mod) return;
+    this.updateRouteQuery({
+      before: undefined,
+      after: undefined,
+      mod: nextFilter || undefined,
     });
   }
 
@@ -94,7 +116,8 @@ class LogsContainer extends React.PureComponent<Props, null> {
 
   public clearFilters = () => {
     this.updateRouteQuery({
-      filter: undefined,
+      link: undefined,
+      author: undefined,
       actions: undefined,
       type: undefined,
     });
@@ -126,14 +149,21 @@ class LogsContainer extends React.PureComponent<Props, null> {
       params,
       subreddits,
       children,
-      location,
       location: {
-        query: { limit = '25', filter = '', actions = '', type },
+        query: {
+          limit = '25',
+          link: linkFilter = '',
+          author: authorFilter = '',
+          mod: modFilter = '',
+          actions = '',
+          type,
+        },
         query,
       },
       after,
       before,
       fetching,
+      isAuthenticatedMod,
     } = this.props;
     const viewingPermalink = !!params.permalinkId;
 
@@ -146,8 +176,8 @@ class LogsContainer extends React.PureComponent<Props, null> {
                 { fetching && <div className="logs-fetching-overlay" /> }
 
                 { React.cloneElement(children, {
-                  location,
-                  onChangeFilter: this.changeFilter,
+                  onChangeLinkFilter: this.changeLinkFilter,
+                  onChangeAuthorFilter: this.changeAuthorFilter,
                 })}
               </div>
             </div>
@@ -158,15 +188,20 @@ class LogsContainer extends React.PureComponent<Props, null> {
                   <div className="sticky" style={style}>
                     <Filters
                       onChangeLimit={this.changeLimit}
-                      onChangeFilter={this.changeFilter}
+                      onChangeLinkFilter={this.changeLinkFilter}
+                      onChangeAuthorFilter={this.changeAuthorFilter}
+                      onChangeModFilter={this.changeModFilter}
                       onChangeActions={this.changeActions}
                       onChangeType={this.changeType}
                       onClearFilters={this.clearFilters}
                       limit={limit}
-                      currentFilter={filter}
+                      currentLinkFilter={linkFilter}
+                      currentAuthorFilter={authorFilter}
+                      currentModFilter={modFilter}
                       currentActions={actions}
                       currentType={type}
                       disableFilters={viewingPermalink}
+                      isAuthenticatedMod={isAuthenticatedMod}
                     />
 
                     <div className="log-navigation">
@@ -215,4 +250,5 @@ export default connect(state => ({
   after: state.logs.after,
   before: state.logs.before,
   fetching: state.logs.fetching,
+  isAuthenticatedMod: state.app.isAuthenticatedMod,
 }), actions)(LogsContainer);

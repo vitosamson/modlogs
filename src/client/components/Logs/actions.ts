@@ -1,19 +1,14 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { ILog } from '../../../server/models/log/type';
 import { StoreState } from '../../store/reducers';
 import { startLoadingBar, stopLoadingBar } from '../../store/actions';
-import { ILogsQuery } from '../../../server/routeHandlers/api/logs';
+import { ILogsQuery, ILogsRetVal } from '../../../server/routeHandlers/api/logs';
 
 export const FETCH_LOGS_REQUEST = '@@logs/request';
 export const FETCH_LOGS_SUCCESS = '@@logs/success';
 export const FETCH_LOGS_ERROR = '@@logs/error';
 export interface FetchLogsRequestAction extends Action { subreddit: string; }
-export interface FetchLogsSuccessAction extends Action {
-  logs: ILog[];
-  before: string | null;
-  after: string | null;
-}
+export interface FetchLogsSuccessAction extends Action { logs: ILogsRetVal; }
 export interface FetchLogsErrorAction extends Action { err: Error; }
 
 const defaultQueryParams: ILogsQuery = {

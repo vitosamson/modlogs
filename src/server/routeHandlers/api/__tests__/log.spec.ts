@@ -1,6 +1,6 @@
 import { getSubredditLogsCollection } from '../../../models/log';
 import { getMySubredditsCollection, ISubredditModlogConfig } from '../../../models/subreddit';
-import logApi from '../log';
+import { log as logApi } from '../log';
 
 describe('/api/log', () => {
   const subreddit = 'logApiTest';

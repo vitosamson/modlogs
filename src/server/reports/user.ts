@@ -1,5 +1,5 @@
 import { Comment, Submission, VoteableContent } from 'snoowrap';
-import reddit from '../reddit';
+import reddit, { parseUsername } from '../reddit';
 import { getSubredditLogsCollection, ILog } from '../models/log';
 import { parsePeriod } from '../utils';
 import getLogger from '../logger';
@@ -41,11 +41,6 @@ interface AggregateGroup {
 }
 
 const logger = getLogger('UserReportGenerator');
-
-export const parseUsername = (username: string): string => {
-  const match: string[] = /(?:u\/)?(\w+)/.exec(username) || [];
-  return match[1] || username;
-};
 
 export default async function userReport({ username, period, subreddit }: UserReportParams): Promise<UserReport> {
   const logsCollection = await getSubredditLogsCollection(subreddit);

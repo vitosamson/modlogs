@@ -1,27 +1,32 @@
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
 
+$header-item-color: rgb(245, 245, 245);
+
 .app-container header {
   width: 100%;
   background: #3b5765;
-  padding: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
 
   a {
-    color: rgb(245, 245, 245);
+    color: $header-item-color;
+  }
+
+  @media (max-width: $screen-xs-max) {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .name {
     font-size: 1.5em;
     flex: 1;
-    padding-left: 20px;
     margin: 0;
-    color: rgb(245, 245, 245);
 
     @media (max-width: $screen-xs-max) {
-      padding-left: 10px;
-      font-size: 1.2em;
+      display: none;
     }
   }
 
@@ -37,9 +42,9 @@
 
     @media (max-width: $screen-xs-max) {
       flex: 2;
-      padding-right: 10px;
       margin-top: 5px;
       margin-bottom: 5px;
+      max-width: 100%;
     }
 
     .Select-value,
@@ -50,16 +55,22 @@
 
   .links {
     padding: 10px;
-    float: right;
     list-style: none;
     font-size: 1.2em;
     margin: 0;
     flex: 1;
-    text-align: right;
-    padding-right: 20px;
+    display: flex;
+    justify-content: flex-end;
 
-    @media (max-width: $screen-xs-max) {
-      display: none; // TODO
+    li {
+      margin-left: 10px;
+      color: $header-item-color;
+    }
+
+    .mod-login {
+      i {
+        margin-left: 5px;
+      }
     }
   }
 }

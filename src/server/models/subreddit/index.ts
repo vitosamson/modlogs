@@ -2,10 +2,6 @@ import { Collection } from 'mongodb';
 import { getDb, DBNames } from '../../db';
 import { ISubreddit, ISubredditModlogConfig } from './type';
 
-interface ISubredditWithConfig extends ISubreddit {
-  modlogConfig: ISubredditModlogConfig;
-}
-
 const subredditsCollectionName = 'subreddits';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -13,25 +9,6 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const configArrayItems: Array<keyof ISubredditModlogConfig> = [
   'include_moderators', 'exclude_moderators', 'include_actions', 'exclude_actions',
 ];
-
-// everything is enabled by default in dev, disabled by default in prod
-const defaultSubredditModlogConfig: ISubredditModlogConfig = {
-  show_comment_links: isDevelopment,
-  show_submission_links: isDevelopment,
-  show_comment_contents: true,
-  show_submission_contents: true,
-  show_comment_author: isDevelopment,
-  show_submission_author: isDevelopment,
-  show_submission_title: true,
-  show_moderator_name: isDevelopment,
-  show_ban_user: true,
-  show_ban_duration: true,
-  show_ban_description: isDevelopment,
-  include_actions: null,
-  exclude_actions: null,
-  include_moderators: null,
-  exclude_moderators: null,
-};
 
 export async function getMySubredditsCollection(): Promise<Collection> {
   const db = await getDb(DBNames.internal);
@@ -43,11 +20,40 @@ export async function getMySubreddits(): Promise<ISubreddit[]> {
   return collection.find<ISubreddit>().toArray();
 }
 
-export async function getSubredditConfig(subredditName: string): Promise<ISubredditModlogConfig> {
+export async function getSubreddit(name: string): Promise<ISubreddit> {
   const collection = await getMySubredditsCollection();
-  const subreddit = await collection.findOne({ name: new RegExp(subredditName, 'i') }) as ISubredditWithConfig;
+  return collection.findOne({ name: new RegExp(name, 'i') });
+}
 
-  if (!subreddit || !subreddit.modlogConfig) return defaultSubredditModlogConfig;
+function createDefaultModlogConfig(isAuthenticatedMod = false): ISubredditModlogConfig {
+  return {
+    show_comment_links: isDevelopment || isAuthenticatedMod,
+    show_submission_links: isDevelopment || isAuthenticatedMod,
+    show_comment_contents: true,
+    show_submission_contents: true,
+    show_comment_author: isDevelopment || isAuthenticatedMod,
+    show_submission_author: isDevelopment || isAuthenticatedMod,
+    show_submission_title: true,
+    show_moderator_name: isDevelopment || isAuthenticatedMod,
+    show_ban_user: true,
+    show_ban_duration: true,
+    show_ban_description: isDevelopment || isAuthenticatedMod,
+    include_actions: null,
+    exclude_actions: null,
+    include_moderators: null,
+    exclude_moderators: null,
+  };
+}
+
+export async function getSubredditConfig(subredditName: string, isAuthenticatedMod = false): Promise<ISubredditModlogConfig> {
+  const defaultConfig = createDefaultModlogConfig(isAuthenticatedMod);
+
+  // if the user is logged in as a mod, they bypass any config restrictions
+  if (isAuthenticatedMod) return defaultConfig;
+
+  const subreddit = await getSubreddit(subredditName);
+
+  if (!subreddit || !subreddit.modlogConfig) return defaultConfig;
 
   const config = subreddit.modlogConfig;
   configArrayItems.map(thing => {
@@ -62,7 +68,7 @@ export async function getSubredditConfig(subredditName: string): Promise<ISubred
     }
   });
 
-  return Object.assign({}, defaultSubredditModlogConfig, config);
+  return Object.assign({}, defaultConfig, config);
 }
 
 export { ISubreddit, ISubredditModlogConfig };

@@ -1,0 +1,32 @@
+# this compose file contains overrides for docker-compose.yml for use in dev
+
+version: "3"
+services:
+  web:
+    environment:
+      PORT: 4245
+      LOG_LEVEL: debug
+      NODE_ENV: development
+    volumes:
+      - ../src:/app/src:delegated
+      - .:/app/docker:delegated
+    entrypoint: /app/docker/web/dev-entrypoint.sh
+
+  login:
+    environment:
+      LW_SUBDOMAIN: login.modlogs.local:4241
+
+  mongo:
+    volumes:
+      - /tmp/modlogs/mongo/data:/data
+      - /tmp/modlogs/mongo/data/db:/data/db
+      - /tmp/modlogs/mongo/data/configdb:/data/configdb
+
+  redis:
+    volumes:
+      - /tmp/modlogs/redis:/data
+
+  nginx:
+    image: vitosamson/modlogs:nginx-dev
+    ports:
+      - 4241:443

@@ -16,6 +16,12 @@ export default class Footer extends React.PureComponent<null, null> {
           <ExternalLink to="https://github.com/vitosamson/modlogs">
             source on github
           </ExternalLink>
+
+          <span className="separator">|</span>
+
+          <ExternalLink to="https://github.com/vitosamson/modlogs/tree/master/ModeratorInstructions.md">
+            moderator help
+          </ExternalLink>
         </div>
       </footer>
     );

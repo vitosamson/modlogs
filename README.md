@@ -22,27 +22,33 @@ Mongo is used to store the moderator logs that we fetch. Redis is used to queue 
 
 ### Development
 
-There's a few steps to running in development: the webpack dev server for client code bundling/watching/hot reload; building the server in watch mode; and running the server in watch mode.
+Run `./run-dev`. You can pass any valid `docker-compose up` arguments to that script, e.g. `./run-dev -d nginx`. Make sure the appropriate environment variables are set.
 
-First, run the ui dev server: `yarn ui:dev`.
+Add the following lines to your hosts file:
 
-Then, build the server in watch mode: `yarn server:build:watch`.
+```
+127.0.0.1 modlogs.local
+127.0.0.1 login.modlogs.local
+```
 
-Then, run the server in watch mode: `<env vars> yarn server:run:watch`. See the environment variables section below.
-
-Once that's all up and running, you'll be able to access the UI at http://localhost:4241, and the API at http://localhost:4245.
+Then you'll be able to access the UI at https://modlogs.local:4241. The server will be running in watch-mode, and UI hot reload will work.
 
 ### Production
 
 `yarn ui:build` and `yarn server:build` to build, then `<env vars> yarn server:run` to run.
 
+Or just run `docker-compose -f docker/docker-compose.yml up`.
+
 #### Docker
 
-The app is also dockerized for ease of deployment. There are three docker images:
+The app is also dockerized for ease of deployment. There are a few docker images:
 
   - `web`: runs the API server and serves the UI. be sure to provide the correct env vars (see below)
   - `worker`: queues and processes logs, reports, etc. also needs env vars
   - `mongo`: runs the mongo database
+  - `login`: a small OAuth microservice from [login-with](https://github.com/lipp/login-with)
+  - `nginx`: frontend for the `web` and `login` services
+  - `redis`: runs the redis server for the worker queue
 
 Make sure to pass the appropriate environment variables into the docker containers when they're run.
 
@@ -59,6 +65,14 @@ Make sure to pass the appropriate environment variables into the docker containe
 | `MONGODB_URI` | `mongodb://localhost:modlogs` | `web`, `worker` | the URI of your mongo server |
 | `REDIS_URL` | `redis://localhost` | `worker` | the URI of your redis server |
 | `ANALYTICS_KEY` |  | `web (during ui:build command only)` | the google analytics key |
+| `LW_SESSION_SECRET` |  | `login` | https://github.com/lipp/login-with#mandatory-environment-variables |
+| `LW_JWT_SECRET` |  | `login` | https://github.com/lipp/login-with#mandatory-environment-variables |
+| `LW_REDDIT_CLIENTID` |  | `login` | https://github.com/lipp/login-with#reddit-specific-environment-variables |
+| `LW_REDDIT_CLIENTSECRET` |  | `login` | https://github.com/lipp/login-with#reddit-specific-environment-variables |
+| `AWS_ACCESS_KEY_ID` |  | `worker` | for AWS glacier backups |
+| `AWS_SECRET_ACCESS_KEY` |  | `worker` | for AWS glacier backups |
+| `GLACIER_BACKUP_VAULT` |  | `worker` |  |
+| `GLACIER_BACKUP_REGION` |  | `worker` |  |
 | `NODE_ENV` | `production` | `web` |  |
 | `LOG_LEVEL` | `info` |  | `web`, `worker` |  |
 

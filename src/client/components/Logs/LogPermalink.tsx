@@ -13,6 +13,9 @@ interface Props extends LogItemProps {
   stopLoadingBar: typeof stopLoadingBar;
   fetchLog: typeof logApi;
   logs: ILog[];
+  isAuthenticatedMod: boolean;
+  onChangeLinkFilter: (filter: string) => void;
+  onChangeAuthorFilter: (filter: string) => void;
 }
 
 interface Params {
@@ -64,14 +67,19 @@ class LogPermalink extends React.PureComponent<PermalinkProps, State> {
 
   public render() {
     const { fetching, log } = this.state;
-    const { subreddit } = this.props.params;
+    const { isAuthenticatedMod, onChangeAuthorFilter, onChangeLinkFilter, params: { subreddit } } = this.props;
 
     if (fetching)
       return null;
     else if (log)
       return (
         <div className="log-permalink">
-          <LogItem log={log} onChangeFilter={() => null} />
+          <LogItem
+            log={log}
+            onChangeLinkFilter={onChangeLinkFilter}
+            onChangeAuthorFilter={onChangeAuthorFilter}
+            isAuthenticatedMod={isAuthenticatedMod}
+          />
 
           <div className="view-all">
             <Link to={`/r/${subreddit}`}>
@@ -88,4 +96,5 @@ class LogPermalink extends React.PureComponent<PermalinkProps, State> {
 export default connect((state: StoreState) => ({
   logs: state.logs.logs,
   fetchLog: state.app.api.log,
+  isAuthenticatedMod: state.app.isAuthenticatedMod,
 }), { startLoadingBar, stopLoadingBar })(LogPermalink);

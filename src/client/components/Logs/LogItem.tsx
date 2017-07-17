@@ -8,7 +8,9 @@ import './logItem.scss';
 
 export interface LogItemProps {
   log: ILog;
-  onChangeFilter: (filter: string) => void;
+  onChangeLinkFilter: (filter: string) => void;
+  onChangeAuthorFilter: (filter: string) => void;
+  isAuthenticatedMod: boolean;
 }
 
 interface State {
@@ -44,7 +46,7 @@ export default class LogItem extends React.PureComponent<LogItemProps, State> {
   }
 
   public render() {
-    const { log, onChangeFilter } = this.props;
+    const { log, onChangeLinkFilter, onChangeAuthorFilter, isAuthenticatedMod } = this.props;
     const { logCreated } = this.state;
 
     return (
@@ -78,7 +80,12 @@ export default class LogItem extends React.PureComponent<LogItemProps, State> {
             <Link to={`/r/${log.subreddit}/log/${log.redditId}`}>log permalink</Link>
           </div>
 
-          <FilterLogDropdown log={log} onChangeFilter={onChangeFilter} />
+          <FilterLogDropdown
+            log={log}
+            onChangeLinkFilter={onChangeLinkFilter}
+            onChangeAuthorFilter={onChangeAuthorFilter}
+            isAuthenticatedMod={isAuthenticatedMod}
+          />
 
           <div className="clearfix" />
         </div>
@@ -140,12 +147,6 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
             - <ExternalLink to={log.author} type="user">/u/{ log.author }</ExternalLink>
           </div>
         }
-
-        { process.env.NODE_ENV === 'development' &&
-          <div className="reddit-id" style={{ marginTop: 10, fontSize: '0.8em' }}>
-            { log.redditId }<br/>{ log._id.toString() }
-          </div>
-        }
       </div>
     );
   }
@@ -163,18 +164,46 @@ const FilterLogDropdownToggle = ({ bsRole, bsClass, ...props }: any) => (
 
 class FilterLogDropdown extends React.PureComponent<LogItemProps, null> {
   public render() {
-    const { log, onChangeFilter } = this.props;
-    if (!log.link) return null;
-    return (
-      <Dropdown id="filter-by" className="filter-by" pullRight={true}>
-        <FilterLogDropdownToggle bsRole="toggle" />
-        <Dropdown.Menu>
-          { log.isComment &&
-            <MenuItem onClick={() => onChangeFilter(extractLink(log, 'comment'))}>all logs for this comment</MenuItem>
-          }
-          <MenuItem onClick={() => onChangeFilter(extractLink(log, 'submission'))}>all logs for this submission</MenuItem>
-        </Dropdown.Menu>
-      </Dropdown>
-    );
+    const { log, onChangeLinkFilter, onChangeAuthorFilter, isAuthenticatedMod } = this.props;
+    const filterOptions = [];
+
+    if (log.link) {
+      if (log.isComment) {
+        filterOptions.push(
+          <MenuItem onClick={() => onChangeLinkFilter(extractLink(log, 'comment'))} key="comment">
+            all logs for this comment
+          </MenuItem>
+        );
+      }
+
+      filterOptions.push(
+        <MenuItem onClick={() => onChangeLinkFilter(extractLink(log, 'submission'))} key="submission">
+          all logs for this submission
+        </MenuItem>
+      );
+    }
+
+    if (isAuthenticatedMod) {
+      if (log.author) {
+        filterOptions.push(
+          <MenuItem onClick={() => onChangeAuthorFilter(log.author)} key="user">
+            all logs for this user
+          </MenuItem>
+        );
+      }
+    }
+
+    if (filterOptions.length) {
+      return (
+        <Dropdown id="filter-by" className="filter-by" pullRight={true}>
+          <FilterLogDropdownToggle bsRole="toggle" />
+          <Dropdown.Menu>
+            { filterOptions }
+          </Dropdown.Menu>
+        </Dropdown>
+      );
+    } else {
+      return null;
+    }
   }
 }

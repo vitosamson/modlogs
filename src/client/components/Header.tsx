@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Option } from 'react-select';
 import Select from './Select';
-import ExternalLink from './ExternalLink';
 import { AppState } from '../store/reducers';
 import './header.scss';
 
@@ -11,17 +10,29 @@ interface Props {
   currentSubreddit?: string;
   onSelectSubreddit: (subreddit: string) => void;
   loading?: boolean;
+  currentPath: string;
 }
 
 class Header extends React.PureComponent<Props & AppState, null> {
   public render() {
-    const { subreddits, currentSubreddit, onSelectSubreddit, loading } = this.props;
+    const { subreddits, currentSubreddit, onSelectSubreddit, loading, username, currentPath } = this.props;
     const subredditOptions = subreddits.sort((a, b) =>
       a.nameLowercase.localeCompare(b.nameLowercase)
     ).map(sub => ({
       label: sub.name,
       value: sub.nameLowercase,
     }));
+
+    // TODO: we don't have access to location.host in SSR
+    let host;
+    let authRedirectUrl;
+    try {
+      host = location.host;
+      authRedirectUrl = encodeURIComponent(`https://${host}${currentPath}`);
+    } catch (e) {
+      host = '';
+      authRedirectUrl = '';
+    }
 
     return (
       <header>
@@ -43,10 +54,17 @@ class Header extends React.PureComponent<Props & AppState, null> {
         </div>
 
         <ul className="links">
-          <li>
-            <ExternalLink to="https://github.com/vitosamson/modlogs/tree/master/ModeratorInstructions.md">
-              Help
-            </ExternalLink>
+          <li className="mod-login">
+            { username ?
+              <a href={`https://login.${host}/logout?success=${authRedirectUrl}&failure=${authRedirectUrl}`}>
+                { username }
+                <i className="fa fa-sign-out" />
+              </a>
+              :
+              <a href={`https://login.${host}/?success=${authRedirectUrl}&failure=${authRedirectUrl}`}>
+                Moderator Login
+              </a>
+            }
           </li>
         </ul>
       </header>

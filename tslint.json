@@ -39,6 +39,7 @@
           "arrays": "always"
         }
       }
-    ]
+    ],
+    "no-object-literal-type-assertion": [false]
   }
 }

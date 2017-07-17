@@ -8,8 +8,9 @@ export interface ISubreddit {
   created: number;
   subscribers: number;
 
-  // this is stored in the db, but is not part of the subreddit model itself and should not be returned to the client
-  // modlogConfig: ISubredditModlogConfig;
+  // these are stored in the db for internal use, but should not be returned to the client
+  modlogConfig?: ISubredditModlogConfig;
+  moderators?: string[];
 }
 
 export interface ISubredditModlogConfig {
