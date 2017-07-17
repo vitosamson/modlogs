@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import reddit from '../../../reddit';
 import getLogger from '../../../logger';
 import { parseUsername } from '../../../reddit';
@@ -16,6 +17,7 @@ interface UserReportJobData {
 }
 
 const logger = getLogger('ReportsQueueConsumer');
+const dateFormat = 'YYYY-MM-DD';
 
 export default async function processUserReport({ request, subreddit, messageFullname }: UserReportJobData) {
   const username = parseUsername(request.username);
@@ -32,8 +34,8 @@ export default async function processUserReport({ request, subreddit, messageFul
     report.removedComments.sort((a, b) =>
       b.timestamp - a.timestamp
     ).map(comment => ([
-      `[${truncateContent(comment.title)}](${comment.link})`,
-      new Date(comment.timestamp).toLocaleDateString(),
+      `[${truncateContent(comment.content) || comment.link}](${comment.link})`,
+      moment(comment.timestamp).utc().format(dateFormat),
     ]))
   );
 
@@ -43,7 +45,7 @@ export default async function processUserReport({ request, subreddit, messageFul
       b.timestamp - a.timestamp
     ).map(submission => ([
       `[${truncateContent(submission.title)}](${submission.link})`,
-      new Date(submission.timestamp).toLocaleDateString(),
+      moment(submission.timestamp).utc().format(dateFormat),
     ]))
   );
 

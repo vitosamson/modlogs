@@ -75,7 +75,7 @@
     "server:run": "node build/server/server",
     "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
     "clean": "trash build/**/*",
-    "test": "jest --forceExit",
+    "test": "NODE_ENV=test jest --forceExit",
     "test:watch": "yarn test -- --watch",
     "test:ci": "yarn test -- -i"
   },

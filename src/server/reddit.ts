@@ -22,8 +22,6 @@ const defaultSnooOpts: ConstructorOptions = {
 
 const modLogWikiPageName = 'modlog_config';
 
-// used for getting the submission and comment ids out of a permalink
-
 export const isComment = (fullname: string) => fullname && fullname.startsWith('t1_');
 export const isSubmission = (fullname: string) => fullname && fullname.startsWith('t3_');
 
