@@ -2,6 +2,7 @@
 
 docker build -t "$DOCKER_REPO":web -f docker/web/Dockerfile --build-arg ANALYTICS_KEY="$ANALYTICS_KEY" .
 docker build -t "$DOCKER_REPO":worker -f docker/worker/Dockerfile .
+docker build -t "$DOCKER_REPO":nginx -f docker/nginx/Dockerfile .
 docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 docker push "$DOCKER_REPO"
 
