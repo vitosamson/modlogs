@@ -75,8 +75,10 @@ The following moderation actions can be used in the `include_actions` and `exclu
   - unbanuser
   - removelink
   - approvelink
+  - spamlink
   - removecomment
   - approvecomment
+  - spamcomment
   - addmoderator
   - invitemoderator
   - uninvitemoderator
