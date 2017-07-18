@@ -31,8 +31,8 @@ ENV EDITOR /usr/bin/vim
 
 ADD package.json /tmp/package.json
 ADD yarn.lock /tmp/yarn.lock
-RUN cd /tmp && yarn install
-RUN mkdir /app && mv /tmp/node_modules /app
+RUN cd /tmp && yarn install --silent
+RUN mkdir /app && cp -a /tmp/node_modules /app
 
 COPY . /app
 WORKDIR /app
