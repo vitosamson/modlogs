@@ -1,15 +1,18 @@
 #!/bin/bash -e
 
-ARCHIVE_FILE=mongodump-$(date +%Y-%m-%d)
+DUMP_DIRECTORY=mongodump-$(date +%Y-%m-%d)
+GZIP_ARCHIVE=$DUMP_DIRECTORY.tgz
 
 cd /tmp
-mongodump --gzip --archive=$ARCHIVE_FILE -h mongo
+mongodump -o $DUMP_DIRECTORY -h mongo
+tar czf $GZIP_ARCHIVE $DUMP_DIRECTORY
 
 aws \
   --region $GLACIER_BACKUP_REGION \
   glacier upload-archive \
   --account-id - \
   --vault-name $GLACIER_BACKUP_VAULT \
-  --body $ARCHIVE_FILE
+  --body $GZIP_ARCHIVE
 
-rm $ARCHIVE_FILE
+rm -rf $DUMP_DIRECTORY
+rm $GZIP_ARCHIVE
