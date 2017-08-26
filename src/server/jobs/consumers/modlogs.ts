@@ -1,5 +1,5 @@
 import { ModAction } from 'snoowrap';
-import { addJob } from '../queue';
+// import { addJob } from '../queue';
 import reddit, { isComment, isSubmission } from '../../reddit';
 import getLogger from '../../logger';
 import { FetchModlogsJobData } from '../producers/modlogs';
@@ -36,16 +36,21 @@ export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
 
   logger.info('got %s logs for %s', logs.length, subreddit);
 
-  await addJob<ProcessLogsJobData>({
-    jobType: processLogsJobType,
-    data: {
-      subreddit,
-
-      // logs have to be reversed so that when they're added to the db,
-      // the newest log is at the end of the collection
-      logs: logs.reverse(),
-    },
+  await processLogs({
+    subreddit,
+    logs: logs.reverse(),
   });
+
+  // await addJob<ProcessLogsJobData>({
+  //   jobType: processLogsJobType,
+  //   data: {
+  //     subreddit,
+
+  //     // logs have to be reversed so that when they're added to the db,
+  //     // the newest log is at the end of the collection
+  //     logs: logs.reverse(),
+  //   },
+  // });
 }
 
 export async function processLogs({ subreddit, logs }: ProcessLogsJobData) {

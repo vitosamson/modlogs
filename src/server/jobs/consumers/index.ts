@@ -3,7 +3,7 @@
  */
 
 import { addJobProcessor } from '../queue';
-import { fetchLogs, processLogs, processLogsJobType } from './modlogs';
+import { fetchLogs /*, processLogs, processLogsJobType */ } from './modlogs';
 import { fetchSubreddits } from './subreddits';
 import processReports from './reports';
 import processModInvite from './modInvite';
@@ -21,12 +21,12 @@ addJobProcessor({
   processor: fetchLogs,
 });
 
-logger.info('adding queue processor for', processLogsJobType);
-addJobProcessor({
-  jobType: processLogsJobType,
-  concurrency: 10,
-  processor: processLogs,
-});
+// logger.info('adding queue processor for', processLogsJobType);
+// addJobProcessor({
+//   jobType: processLogsJobType,
+//   concurrency: 10,
+//   processor: processLogs,
+// });
 
 logger.info('adding queue processor for', messageSubjects.report);
 addJobProcessor({
