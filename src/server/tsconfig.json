@@ -16,12 +16,15 @@
       "es2017"
     ],
     "experimentalDecorators": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "typeRoots": [
+      "../../node_modules/@types",
+      "../types"
+    ]
   },
   "include": [
     "./**/*.ts",
     "./jobs/**/*",
-    "./queue/**/*",
-    "../types/**/*"
+    "./queue/**/*"
   ]
 }

@@ -68,6 +68,12 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
+"@types/form-data@*":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-2.2.0.tgz#a98aac91dc99857b6af24caef7ca6df302f31565"
+  dependencies:
+    "@types/node" "*"
+
 "@types/history@^3":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-3.2.1.tgz#0039ab0e0be2a0cc22bac171d27a44588103d123"
@@ -116,9 +122,9 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-0.0.29.tgz#fbcfd330573b912ef59eeee14602bface630754b"
 
-"@types/mongodb@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-2.2.0.tgz#715adcf0e1d615f2f3100d3b879124e799fe1b4c"
+"@types/mongodb@^2.2.10":
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-2.2.10.tgz#b8a9c009f498b2ee815dedf7f6efa616c2d997c4"
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
@@ -193,12 +199,26 @@
   dependencies:
     redux-thunk "*"
 
+"@types/request@*":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.0.tgz#7d6fd2a1ef48ad07d0e3333471b8267156d707a4"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
+
 "@types/serve-static@*":
   version "1.7.31"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.7.31.tgz#15456de8d98d6b4cff31be6c6af7492ae63f521a"
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/snoowrap@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@types/snoowrap/-/snoowrap-1.14.0.tgz#b7eb2695d8232869b2fdbccec3d4787ed4a0f6af"
+  dependencies:
+    "@types/node" "*"
+    "@types/request" "*"
 
 "@types/webpack-env@^1.13.0":
   version "1.13.0"

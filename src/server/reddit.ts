@@ -1,7 +1,7 @@
 import { inspect } from 'util';
-import { ConstructorOptions, ModAction, PrivateMessage, RedditUser, Comment, Submission } from 'snoowrap';
+import * as Snoowrap from 'snoowrap';
+import { SnoowrapOptions, ModAction, PrivateMessage, RedditUser, Comment, Submission } from 'snoowrap';
 import * as yaml from 'js-yaml';
-import Snoowrap from './snoowrap';
 import getLogger from './logger';
 import { ISubreddit, ISubredditModlogConfig } from './models/subreddit/type';
 import { Metric, MetricType } from './models/metric';
@@ -12,7 +12,7 @@ const redditUsername = process.env.REDDIT_USER;
 const redditPassword = process.env.REDDIT_PASSWORD;
 const userAgent = process.env.USER_AGENT;
 
-const defaultSnooOpts: ConstructorOptions = {
+const defaultSnooOpts: SnoowrapOptions = {
   userAgent,
   username: redditUsername,
   password: redditPassword,
@@ -85,18 +85,21 @@ class SnoowrapWithMetrics extends Snoowrap {
 }
 
 export class Reddit {
-  constructor(opts?: ConstructorOptions) {
-    const options: ConstructorOptions = Object.assign({}, defaultSnooOpts, opts);
+  constructor(opts?: SnoowrapOptions) {
+    const options: SnoowrapOptions = Object.assign({}, defaultSnooOpts, opts);
     this.r = new SnoowrapWithMetrics(options);
     this.logger.info('running as reddit user', options.username);
     this.logger.info('running under app id', options.clientId);
+    this.r.config({
+      proxies: false,
+    });
   }
 
   private r: Snoowrap;
   private logger = getLogger('reddit');
 
   public async getModdedSubreddits(): Promise<ISubreddit[]> {
-    const subs = await this.r.getModeratedSubreddits().fetchAll();
+    const subs = await (await this.r.getModeratedSubreddits()).fetchAll();
     const formattedSubs: ISubreddit[] = subs.map(sub => ({
       id: sub.id,
       name: sub.display_name,
@@ -126,7 +129,7 @@ export class Reddit {
 
   public async getInboxMessages(): Promise<PrivateMessage[]> {
     try {
-      return await this.r.getUnreadMessages().fetchAll();
+      return (await this.r.getUnreadMessages()).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];
@@ -155,7 +158,7 @@ export class Reddit {
 
   public async getSubredditModLogs(subredditName: string, opts: { after?: string; before?: string; }): Promise<ModAction[]> {
     try {
-      return await this.r.getSubreddit(subredditName).getModerationLog(opts).fetchAll();
+      return (await this.r.getSubreddit(subredditName).getModerationLog(opts)).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];
@@ -173,7 +176,7 @@ export class Reddit {
 
   public async getUserComments(username: string): Promise<Comment[]> {
     try {
-      return await this.r.getUser(username).getComments().fetchAll();
+      return (await this.r.getUser(username).getComments()).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];
@@ -182,7 +185,7 @@ export class Reddit {
 
   public async getUserSubmissions(username: string): Promise<Submission[]> {
     try {
-      return await this.r.getUser(username).getSubmissions().fetchAll();
+      return (await this.r.getUser(username).getSubmissions()).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];

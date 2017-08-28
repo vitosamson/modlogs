@@ -59,7 +59,7 @@ export async function run() {
         messageId: message.id,
         messageFullname: message.name,
         timestamp: message.created * 1000,
-        from: message.author,
+        from: message.author.name,
         subreddit,
       };
 

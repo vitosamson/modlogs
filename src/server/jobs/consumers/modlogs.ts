@@ -11,7 +11,7 @@ export const processLogsJobType = 'processLogs';
 
 interface ProcessLogsJobData {
   subreddit: string;
-  logs: ModAction[];
+  logs: ILog[];
 }
 
 export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
@@ -32,11 +32,11 @@ export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
     logger.info('\t no previous logs, starting from the top (this might take a while)');
   }
 
-  const logs = await reddit.getSubredditModLogs(subreddit, { before });
+  const logs = formatLogs(await reddit.getSubredditModLogs(subreddit, { before }));
 
   logger.info('got %s logs for %s', logs.length, subreddit);
 
-  await processLogs({
+  return processLogs({
     subreddit,
     logs: logs.reverse(),
   });
@@ -59,7 +59,7 @@ export async function processLogs({ subreddit, logs }: ProcessLogsJobData) {
   while (logs.length) {
     logger.info('processing logs for %s, %s remaining', subreddit, logs.length);
     const group = logs.splice(0, 1000); // limit of collection.insertMany()
-    await collection.insertMany(formatLogs(group));
+    await collection.insertMany(group);
   }
 
   logger.info('finished processing logs for', subreddit);
@@ -68,7 +68,7 @@ export async function processLogs({ subreddit, logs }: ProcessLogsJobData) {
 const formatLogs = (logs: ModAction[]): ILog[] => {
   return logs.map(log => {
     const { submissionId, commentId } = reddit.getThingIdsFromLink(log.target_permalink);
-    const subreddit = log.subreddit.toString();
+    const subreddit = log.subreddit.name;
 
     return {
       timestamp: log.created_utc * 1000,
