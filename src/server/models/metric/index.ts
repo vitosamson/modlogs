@@ -63,13 +63,15 @@ export class Metric {
   private start: number;
 
   public report(err?: any, data?: any) {
-    reportMetric({
-      type: this.type,
-      timestamp: new Date(),
-      duration: Date.now() - this.start,
-      data: Object.assign({}, this.data, data),
-      error: err,
-    });
+    if (process.env.ENABLE_METRIC_REPORTING) {
+      reportMetric({
+        type: this.type,
+        timestamp: new Date(),
+        duration: Date.now() - this.start,
+        data: Object.assign({}, this.data, data),
+        error: err,
+      });
+    }
   }
 }
 

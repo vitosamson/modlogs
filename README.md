@@ -74,7 +74,8 @@ Make sure to pass the appropriate environment variables into the docker containe
 | `GLACIER_BACKUP_VAULT` |  | `worker` |  |
 | `GLACIER_BACKUP_REGION` |  | `worker` |  |
 | `NODE_ENV` | `production` | `web` |  |
-| `LOG_LEVEL` | `info` |  | `web`, `worker` |  |
+| `LOG_LEVEL` | `info` | `web`, `worker` |  |
+| `ENABLE_METRIC_REPORTING` | `false` | `worker` | if enabled, logs certain metrics (reddit API hits, reports, etc) to an internal mongo db. disabled by default |
 
 ## Processing subreddits, logs, and reports
 
