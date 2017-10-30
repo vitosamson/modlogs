@@ -68,7 +68,7 @@ export async function processLogs({ subreddit, logs }: ProcessLogsJobData) {
 const formatLogs = (logs: ModAction[]): ILog[] => {
   return logs.map(log => {
     const { submissionId, commentId } = reddit.getThingIdsFromLink(log.target_permalink);
-    const subreddit = log.subreddit.name;
+    const subreddit = log.subreddit.display_name;
 
     return {
       timestamp: log.created_utc * 1000,
