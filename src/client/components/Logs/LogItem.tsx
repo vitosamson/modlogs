@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router';
-import { Dropdown, MenuItem } from 'react-bootstrap';
+import { Dropdown, MenuItem, DropdownToggleProps } from 'react-bootstrap';
 import ExternalLink from '../ExternalLink';
 import { ILog } from '../../../server/models/log/type';
 import mdToHtml from '../../utils/mdToHtml';
@@ -158,9 +158,17 @@ const extractLink = (log: ILog, type: 'comment' | 'submission') => {
   return link;
 };
 
-const FilterLogDropdownToggle = ({ bsRole, bsClass, ...props }: any) => (
-  <span {...props} className="filter-toggle">filter <span className="caret" /></span>
-);
+// react-bootstrap tries to get a ref to this component, so it needs to be a class
+class FilterLogDropdownToggle extends React.PureComponent<DropdownToggleProps, null> {
+  public render() {
+    // props.onClick apparently doesn't match the signature of span.onClick, so need to cast to any
+    return (
+      <span onClick={this.props.onClick as any} className="filter-toggle">
+        filter <span className="caret" />
+      </span>
+    );
+  }
+}
 
 class FilterLogDropdown extends React.PureComponent<LogItemProps, null> {
   public render() {

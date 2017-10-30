@@ -40,6 +40,21 @@
         }
       }
     ],
-    "no-object-literal-type-assertion": [false]
+    "no-object-literal-type-assertion": [false],
+    "no-submodule-imports": [false]
+  },
+  "jsRules": {
+    "quotemark": [true, "single"],
+    "object-literal-sort-keys": false,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "functions": "never",
+          "objects": "always",
+          "arrays": "always"
+        }
+      }
+    ]
   }
 }

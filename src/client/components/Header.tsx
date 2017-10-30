@@ -13,26 +13,38 @@ interface Props {
   currentPath: string;
 }
 
-class Header extends React.PureComponent<Props & AppState, null> {
+interface State {
+  authRedirectUrl: string;
+  host: string;
+}
+
+class Header extends React.PureComponent<Props & AppState, State> {
+  public state: State = {
+    authRedirectUrl: '',
+    host: '',
+  }
+
+  public componentDidMount() {
+    const { currentPath } = this.props;
+
+    try {
+      const host = location.host;
+      const authRedirectUrl = encodeURIComponent(`https://${host}${currentPath}`);
+      this.setState({ host, authRedirectUrl });
+    } catch (e) {
+      // noop
+    }
+  }
+
   public render() {
-    const { subreddits, currentSubreddit, onSelectSubreddit, loading, username, currentPath } = this.props;
+    const { host, authRedirectUrl } = this.state;
+    const { subreddits, currentSubreddit, onSelectSubreddit, loading, username } = this.props;
     const subredditOptions = subreddits.sort((a, b) =>
       a.nameLowercase.localeCompare(b.nameLowercase)
     ).map(sub => ({
       label: sub.name,
       value: sub.nameLowercase,
     }));
-
-    // TODO: we don't have access to location.host in SSR
-    let host;
-    let authRedirectUrl;
-    try {
-      host = location.host;
-      authRedirectUrl = encodeURIComponent(`https://${host}${currentPath}`);
-    } catch (e) {
-      host = '';
-      authRedirectUrl = '';
-    }
 
     return (
       <header>

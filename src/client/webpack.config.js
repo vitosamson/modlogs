@@ -5,7 +5,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-const htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index.tpl.html')).toString();
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -31,15 +30,11 @@ if (isDevelopment) {
 
   plugins.push(function() {
     this.plugin('done', stats => {
-      const chunks = stats.toJson().assetsByChunkName;
-      const appJs = chunks.app.find(c => path.extname(c) === '.js');
       fs.writeFileSync(
-        path.resolve('../../build/client/index.tpl.html'),
-        htmlTpl
-          .replace('__app_css__', '')
-          .replace('__vendor_js__', '')
-          .replace('__app_js__', `/${appJs}`)
-          .replace('__webpack_manifest__', '')
+        path.resolve('../../build/client/assets.json'),
+        JSON.stringify({
+          appScriptHref: '/bundle.js',
+        }, null, 2)
       );
     });
   });
@@ -75,12 +70,13 @@ if (isDevelopment) {
       const relativeToAssets = chunk => `/assets/${chunk}`;
 
       fs.writeFileSync(
-        path.resolve('../../build/client/index.tpl.html'),
-        htmlTpl
-          .replace('__app_css__', relativeToAssets(appCss))
-          .replace('__vendor_js__', relativeToAssets(vendorJs))
-          .replace('__app_js__', relativeToAssets(appJs))
-          .replace('__webpack_manifest__', webpackManifest)
+        path.resolve('../../build/client/assets.json'),
+        JSON.stringify({
+          webpackManifest,
+          cssHref: relativeToAssets(appCss),
+          vendorScriptHref: relativeToAssets(vendorJs),
+          appScriptHref: relativeToAssets(appJs),
+        }, null, 2)
       );
     });
   });

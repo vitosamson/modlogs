@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import * as React from 'react';
 import * as express from 'express';
-import { renderToString } from 'react-dom/server';
+import { renderToNodeStream } from 'react-dom/server';
 import { createStore, applyMiddleware, Store } from 'redux';
 import thunk from 'redux-thunk';
 import { match } from 'react-router';
@@ -13,6 +13,7 @@ import 'isomorphic-fetch';
 
 import appReducer, { StoreState } from '../../client/store/reducers';
 import { initialState as initialLogsState } from '../../client/components/Logs/reducer';
+import Html, { Props as HtmlProps } from '../../client/containers/Html';
 import Root from '../../client/containers/Root';
 import routes from '../../client/routes';
 
@@ -21,8 +22,7 @@ import { logs as logsHandler, ILogsQuery } from './api/logs';
 import { log as logHandler } from './api/log';
 import { AuthenticatedRequest } from './modLoginMiddleware';
 
-const htmlTplFilePath = resolve('build/client/index.tpl.html');
-const htmlTpl = readFileSync(htmlTplFilePath).toString();
+const clientAssets = JSON.parse(readFileSync(resolve('build/client/assets.json')).toString()) as HtmlProps;
 
 interface LoadedProps {
   asyncProps: any;
@@ -30,6 +30,8 @@ interface LoadedProps {
 }
 
 export default async function renderUi(req: AuthenticatedRequest, res: express.Response) {
+  res.setHeader('content-type', 'text/html');
+
   match({ routes, location: req.url }, async (error, redirectLocation, renderProps) => {
     if (error) {
       res.status(500).send(error.message);
@@ -54,12 +56,24 @@ export default async function renderUi(req: AuthenticatedRequest, res: express.R
       };
       const store = createStore<StoreState>(appReducer, initialState, applyMiddleware(thunk));
       const { asyncProps, scriptTag } = await loadProps(renderProps, store);
-      const html = renderToString(<Root store={store} routerProps={renderProps} asyncProps={asyncProps} />);
-      const finalState = store.getState();
 
+      const finalState = store.getState();
       delete finalState.app.api;
 
-      res.send(renderFullPage(html, finalState, scriptTag));
+      const { webpackManifest, cssHref, vendorScriptHref, appScriptHref } = clientAssets;
+
+      renderToNodeStream(
+        <Html
+          webpackManifest={webpackManifest}
+          cssHref={cssHref}
+          vendorScriptHref={vendorScriptHref}
+          appScriptHref={appScriptHref}
+          asyncPropsScriptTag={scriptTag}
+          preloadedState={JSON.stringify(finalState)}
+        >
+          <Root store={store} routerProps={renderProps} asyncProps={asyncProps} />
+        </Html>
+      ).pipe(res);
     } else {
       res.status(404).send('Not found');
     }
@@ -73,11 +87,4 @@ function loadProps(renderProps: any, store: Store<any>): Promise<LoadedProps> {
       resolve({ asyncProps, scriptTag });
     });
   });
-}
-
-function renderFullPage(html: string, preloadedState: object, asyncPropsScriptTag: string) {
-  return htmlTpl.replace(
-    '__preloaded_state__',
-    JSON.stringify(preloadedState).replace(/'/g, '&apos;')
-  ).replace('__rendered_html__', html).replace('__async_props_script__', asyncPropsScriptTag);
 }

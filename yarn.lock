@@ -6799,7 +6799,7 @@ tslint-react@^2.5.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/tslint-react/-/tslint-react-2.6.0.tgz#47a21fada1fd17589d4043bb088247d91a18bb83"
 
-tslint@^5.2.0:
+tslint@^5.8.0:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.8.0.tgz#1f49ad5b2e77c76c3af4ddcae552ae4e3612eb13"
   dependencies:

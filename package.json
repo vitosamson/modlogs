@@ -89,7 +89,7 @@
     "redux-next": "reactjs/redux#next",
     "ts-jest": "^20.0.6",
     "ts-node": "^3.2.0",
-    "tslint": "^5.2.0",
+    "tslint": "^5.8.0",
     "tslint-react": "^2.5.0"
   }
 }
