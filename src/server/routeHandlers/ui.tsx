@@ -58,7 +58,6 @@ export default async function renderUi(req: AuthenticatedRequest, res: express.R
       const { asyncProps, scriptTag } = await loadProps(renderProps, store);
 
       const finalState = store.getState();
-      delete finalState.app.api;
 
       const { webpackManifest, cssHref, vendorScriptHref, appScriptHref } = clientAssets;
 

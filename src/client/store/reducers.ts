@@ -3,7 +3,7 @@ import { loadingBarReducer } from 'react-redux-loading-bar';
 import { ISubreddit } from '../../server/models/subreddit/type';
 import logsReducer, { ILogsState } from '../components/Logs/reducer';
 import { FETCH_LOGS_SUCCESS, FetchLogsSuccessAction } from '../components/Logs/actions';
-import { FETCH_SUBREDDITS_FINISH, FetchSubredditsAction } from './actions';
+import { FETCH_SUBREDDITS_FINISH, FetchSubredditsAction, INIT_API } from './actions';
 import subredditsApi from '../api/subreddits';
 import logsApi from '../api/logs';
 import logApi from '../api/log';
@@ -40,7 +40,7 @@ const initialAppState: AppState = {
 
   /**
    * after the serverside render is complete, it will delete state.app.api so we can replace it with
-   * our actual api calls with go over the wire.
+   * our actual api calls which go over the wire.
    */
   api: {
     subreddits: subredditsApi,
@@ -66,13 +66,13 @@ export const app = (state: AppState = initialAppState, action: Action): AppState
         isAuthenticatedMod: (action as FetchLogsSuccessAction).logs.isAuthenticatedMod,
       };
 
+    case INIT_API:
+      return {
+        ...state,
+        api: initialAppState.api,
+      };
+
     default:
-      if (!state.api) {
-        return {
-          ...state,
-          api: state.api ? state.api : initialAppState.api,
-        };
-      }
       return state;
   }
 };
