@@ -59,13 +59,18 @@ export async function run() {
         messageId: message.id,
         messageFullname: message.name,
         timestamp: message.created * 1000,
-        from: message.author.name,
         subreddit,
+
+        // message.author will be null in moderator invites, so we can't access it until we know
+        // what type of message we received. this should only be set for `report` type messages.
+        from: '',
       };
 
       if (/invitation to moderate/.test(subject)) {
         jobType = subjects.modInvite;
       } else if (subject === 'report') {
+        jobData.from = message.author.name;
+
         if (!mySubreddits.includes(message.subreddit.display_name)) {
           logger.info('ignoring report request %s, not a sub we moderate', message.name);
           await reddit.markMessagesRead([message]);
