@@ -68,7 +68,10 @@ export async function getSubredditConfig(subredditName: string, isAuthenticatedM
     }
   });
 
-  return Object.assign({}, defaultConfig, config);
+  return {
+    ...defaultConfig,
+    ...config,
+  };
 }
 
 export { ISubreddit, ISubredditModlogConfig };

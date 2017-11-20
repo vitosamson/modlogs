@@ -40,18 +40,24 @@ export async function getDb(dbName: DBNames): Promise<Db> {
   return connectDb(dbName);
 }
 
+// this ensures that a config such as { include_moderators: [] } doesn't add { mod: { $in: [] } }
+// to the mongo query, which will result in no logs being returned at all
+const checkArrayConfigItem = (config: ISubredditModlogConfig, key: keyof ISubredditModlogConfig): boolean => {
+  return Array.isArray(config[key]) && (config[key] as any[]).length > 0;
+};
+
 export function createMongoQueryFromConfig(config: ISubredditModlogConfig): IMongoLogQuery {
   const query: IMongoLogQuery = {};
 
-  if (config.include_moderators) {
+  if (checkArrayConfigItem(config, 'include_moderators')) {
     query.mod = { $in: config.include_moderators };
-  } else if (config.exclude_moderators) {
+  } else if (checkArrayConfigItem(config, 'exclude_moderators')) {
     query.mod = { $nin: config.exclude_moderators };
   }
 
-  if (config.include_actions) {
+  if (checkArrayConfigItem(config, 'include_actions')) {
     query.action = { $in: config.include_actions };
-  } else if (config.exclude_actions) {
+  } else if (checkArrayConfigItem(config, 'exclude_actions')) {
     query.action = { $nin: config.exclude_actions };
   }
 

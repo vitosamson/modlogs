@@ -110,26 +110,28 @@ export async function logs(subredditName: string, query: ILogsQuery, isAuthentic
     .limit(limit)
     .project(projection);
 
-  let logs = await aggregation.toArray();
-  if (query.before && mongoQuery._id) logs = logs.reverse();
+  let aggregatedLogs = await aggregation.toArray();
+  if (query.before && mongoQuery._id) aggregatedLogs = aggregatedLogs.reverse();
 
-  const first = logs[0];
-  const last = logs[logs.length - 1];
+  const first = aggregatedLogs[0];
+  const last = aggregatedLogs[aggregatedLogs.length - 1];
 
-  const hasAfter = last && await collection.find(Object.assign({}, mongoQuery, {
+  const hasAfter = last && await collection.find({
+    ...mongoQuery,
     _id: { $lt: last._id },
-  })).sort({
+  }).sort({
     _id: ID_ASCENDING,
   }).limit(limit).hasNext();
 
-  const hasBefore = first && await collection.find(Object.assign({}, mongoQuery, {
+  const hasBefore = first && await collection.find({
+    ...mongoQuery,
     _id: { $gt: first._id },
-  })).sort({
+  }).sort({
     _id: ID_DESCENDING,
   }).limit(limit).hasNext();
 
   return {
-    logs,
+    logs: aggregatedLogs,
     after: hasAfter ? last.redditId : null,
     before: hasBefore ? first.redditId : null,
     isAuthenticatedMod,
