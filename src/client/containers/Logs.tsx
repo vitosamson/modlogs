@@ -78,6 +78,10 @@ class LogsContainer extends React.PureComponent<Props, null> {
     this.updateRouteQuery({
       before: undefined,
       after: undefined,
+      actions: undefined,
+      author: undefined,
+      mod: undefined,
+      type: undefined,
       link: nextFilter || undefined,
     });
   }
@@ -88,6 +92,10 @@ class LogsContainer extends React.PureComponent<Props, null> {
     this.updateRouteQuery({
       before: undefined,
       after: undefined,
+      actions: undefined,
+      link: undefined,
+      mod: undefined,
+      type: undefined,
       author: nextFilter || undefined,
     });
   }
