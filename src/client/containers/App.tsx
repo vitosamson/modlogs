@@ -5,8 +5,7 @@ import { StickyContainer, Sticky } from 'react-sticky';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import store from '../store';
-import { fetchSubreddits, initApi } from '../store/actions';
+import { fetchSubreddits } from '../store/actions';
 import { LoadPropsArgs, LoadPropsCb } from '../types';
 import { initAnalytics, trackPage } from '../analytics';
 
@@ -27,7 +26,6 @@ export default class App extends React.Component<AppProps, null> {
 
   public componentDidMount() {
     initAnalytics();
-    store.dispatch(initApi());
   }
 
   private changeSubreddit = (subreddit: string) => {

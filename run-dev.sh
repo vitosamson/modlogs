@@ -10,4 +10,4 @@ mkdir $DATA_DIR/mongo/data/configdb
 
 mkdir $DATA_DIR/redis
 
-docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $@
+docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml $@

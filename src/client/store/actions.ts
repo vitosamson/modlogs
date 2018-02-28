@@ -18,8 +18,3 @@ export const fetchSubreddits = (): ThunkAction<any, StoreState, any> => {
 
 export const startLoadingBar = showLoading;
 export const stopLoadingBar = hideLoading;
-
-// during SSR, the app.api state is set to use local resolvers to grab data straight from the DB
-// when the client mounts the app, this action resets that state to use the HTTP resolvers
-export const INIT_API = '@@app/initApi';
-export const initApi = () => ({ type: INIT_API });

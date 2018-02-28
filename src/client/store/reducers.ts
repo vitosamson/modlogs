@@ -3,7 +3,7 @@ import { loadingBarReducer } from 'react-redux-loading-bar';
 import { ISubreddit } from '../../server/models/subreddit/type';
 import logsReducer, { ILogsState } from '../components/Logs/reducer';
 import { FETCH_LOGS_SUCCESS, FetchLogsSuccessAction } from '../components/Logs/actions';
-import { FETCH_SUBREDDITS_FINISH, FetchSubredditsAction, INIT_API } from './actions';
+import { FETCH_SUBREDDITS_FINISH, FetchSubredditsAction } from './actions';
 import subredditsApi from '../api/subreddits';
 import logsApi from '../api/logs';
 import logApi from '../api/log';
@@ -32,7 +32,7 @@ export interface StoreState {
   logs: ILogsState;
 }
 
-const initialAppState: AppState = {
+export const initialAppState: AppState = {
   fetchingSubreddits: true,
   subreddits: [],
   isAuthenticatedMod: false,
@@ -64,12 +64,6 @@ export const app = (state: AppState = initialAppState, action: Action): AppState
       return {
         ...state,
         isAuthenticatedMod: (action as FetchLogsSuccessAction).logs.isAuthenticatedMod,
-      };
-
-    case INIT_API:
-      return {
-        ...state,
-        api: initialAppState.api,
       };
 
     default:
