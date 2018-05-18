@@ -23,12 +23,12 @@ interface TopOffendersReport {
 }
 
 const MAX_LIMIT = 100;
-const MAX_PERIOD = '1 month';
+// const MAX_PERIOD = '1 month';
 const logger = getLogger('TopOffendersReportGenerator');
 
 export default async function topOffendersReport({ subreddit, period, limit = null }: TopOffendersReportParams): Promise<TopOffendersReport> {
   limit = limit ? Math.min(limit, MAX_LIMIT) : MAX_LIMIT;
-  const { periodTimestamp, humanizedPeriod } = parsePeriod(period, MAX_PERIOD);
+  const { periodTimestamp, humanizedPeriod } = parsePeriod(period);
   const collection = await getSubredditLogsCollection(subreddit);
   const moderators = await reddit.getSubredditModerators(subreddit);
 
