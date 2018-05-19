@@ -48,7 +48,7 @@ export default class LogItem extends React.PureComponent<LogItemProps, State> {
   public render() {
     const { log, onChangeLinkFilter, onChangeAuthorFilter, isAuthenticatedMod } = this.props;
     const { logCreated } = this.state;
-    const modIconClassname = log.mod === 'AutoModerator' ? 'fa fa-robot' : 'fa fa-user';
+    const modIconClassname = log.mod === 'AutoModerator' || log.mod === 'reddit' ? 'fa fa-robot' : 'fa fa-user';
 
     return (
       <div className="panel panel-default log-item">
@@ -130,17 +130,21 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
         break;
       case 'banuser':
       case 'unbanuser':
-        if (!log.author && !log.details && !log.description) {
+        if (!log.bannedUser && !log.banDuration && !log.banDescription) {
           body = noContent;
         } else {
           body = (
             <div>
-              { log.author && <div><strong>User: </strong>{ log.author }</div> }
-              { log.details && <div><strong>Duration: </strong>{ log.details }</div> }
-              { log.description && <div><strong>Description: </strong>{ log.description }</div> }
+              { log.bannedUser && <div><strong>User: </strong>{ log.bannedUser }</div> }
+              { log.banDuration && <div><strong>Duration: </strong>{ log.banDuration }</div> }
+              { log.banDescription && <div><strong>Description: </strong>{ log.banDescription }</div> }
             </div>
           );
         }
+        break;
+      case 'muteuser':
+      case 'unmuteuser':
+        body = log.mutedUser ? <div><strong>User: </strong>{ log.mutedUser }</div> : noContent;
         break;
       default:
         body = <span>No additional details available</span>;

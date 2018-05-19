@@ -172,12 +172,12 @@ describe('createMongoProjectionFromConfig', () => {
     ]);
 
     let logs = await doQuery({ show_ban_user: true });
-    expect(logs[0].author).toEqual('foo');
-    expect(logs[1].author).toEqual('bar');
+    expect(logs[0].bannedUser).toEqual('foo');
+    expect(logs[1].bannedUser).toEqual('bar');
 
     logs = await doQuery({ show_ban_user: false });
-    expect(logs[0].author).toBeNull();
-    expect(logs[1].author).toBeNull();
+    expect(logs[0].bannedUser).toBeNull();
+    expect(logs[1].bannedUser).toBeNull();
   });
 
   it('ban duration', async () => {
@@ -185,10 +185,10 @@ describe('createMongoProjectionFromConfig', () => {
     await collection.insert({ action: 'banuser', details: '2 days' });
 
     let logs = await doQuery({ show_ban_duration: true });
-    expect(logs[0].details).toEqual('2 days');
+    expect(logs[0].banDuration).toEqual('2 days');
 
     logs = await doQuery({ show_ban_duration: false });
-    expect(logs[0].details).toBeNull();
+    expect(logs[0].banDuration).toBeNull();
   });
 
   it('ban description', async () => {
@@ -198,12 +198,12 @@ describe('createMongoProjectionFromConfig', () => {
     ]);
 
     let logs = await doQuery({ show_ban_description: true });
-    expect(logs[0].description).toEqual('bot');
-    expect(logs[1].description).toEqual('was temporary');
+    expect(logs[0].banDescription).toEqual('bot');
+    expect(logs[1].banDescription).toEqual('was temporary');
 
     logs = await doQuery({ show_ban_description: false });
-    expect(logs[0].description).toBeNull();
-    expect(logs[1].description).toBeNull();
+    expect(logs[0].banDescription).toBeNull();
+    expect(logs[1].banDescription).toBeNull();
   });
 
   it('automod action reasons', async () => {
@@ -218,5 +218,20 @@ describe('createMongoProjectionFromConfig', () => {
 
     logs = await doQuery({ show_automod_action_reasons: false });
     expect(logs[0].automodActionReason).toBeNull();
+  });
+
+  it('muted/unmuted user', async () => {
+    await collection.insertMany([
+      { action: 'muteuser', author: 'someuser' },
+      { action: 'unmuteuser', author: 'someuser' },
+    ]);
+
+    let logs = await doQuery({ show_muted_user: true });
+    expect(logs[0].mutedUser).toEqual('someuser');
+    expect(logs[1].mutedUser).toEqual('someuser');
+
+    logs = await doQuery({ show_muted_user: false });
+    expect(logs[0].mutedUser).toBeNull();
+    expect(logs[1].mutedUser).toBeNull();
   });
 });

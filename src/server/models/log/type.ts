@@ -16,6 +16,10 @@ export interface ILog {
   title?: string | null;
   mod?: string;
 
-  // this is returned to the UI, but is not stored in the db
+  // these are returned to the UI, but are not stored in the db
   automodActionReason?: string;
+  mutedUser?: string;
+  bannedUser?: string;
+  banDuration?: string;
+  banDescription?: string;
 }

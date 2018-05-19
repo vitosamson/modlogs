@@ -43,6 +43,7 @@ function createDefaultModlogConfig(isAuthenticatedMod = false): ISubredditModlog
     include_moderators: null,
     exclude_moderators: null,
     show_automod_action_reasons: isDevelopment || isAuthenticatedMod,
+    show_muted_user: isDevelopment || isAuthenticatedMod,
   };
 }
 

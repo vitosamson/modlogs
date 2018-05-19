@@ -72,20 +72,6 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
     ],
   };
 
-  const isBanOrUnbanCondition = {
-    $or: [
-      { $eq: ['$action', 'banuser'] },
-      { $eq: ['$action', 'unbanuser'] },
-    ],
-  };
-
-  const isNotBanOrUnbanCondition = {
-    $and: [
-      { $ne: ['$action', 'banuser'] },
-      { $ne: ['$action', 'unbanuser'] },
-    ],
-  };
-
   return {
     // I'd prefer not to return the db _id, but it's necessary since we need the _id
     // when determining hasBefore/hasAfter in the /logs handler
@@ -99,27 +85,36 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
     isSubmission: 1,
     details: {
       $cond: [{
-        $or: [
-          {
-            $and: [
-              config.show_ban_duration,
-              isBanOrUnbanCondition,
-            ],
-          },
-          isNotBanOrUnbanCondition,
+        $eq: ['$action', 'wikirevise'],
+      }, '$details', null],
+    },
+    bannedUser: {
+      $cond: [{
+        $and: [
+          config.show_ban_user,
+          { $or: [
+            { $eq: ['$action', 'banuser'] },
+            { $eq: ['$action', 'unbanuser'] },
+          ]},
+        ],
+      }, '$author', null],
+    },
+    banDuration: {
+      $cond: [{
+        $and: [
+          config.show_ban_duration,
+          { $eq: ['$action', 'banuser'] },
         ],
       }, '$details', null],
     },
-    description: {
+    banDescription: {
       $cond: [{
-        $or: [
-          {
-            $and: [
-              config.show_ban_description,
-              isBanOrUnbanCondition,
-            ],
-          },
-          isNotBanOrUnbanCondition,
+        $and: [
+          config.show_ban_description,
+          { $or: [
+            { $eq: ['$action', 'banuser'] },
+            { $eq: ['$action', 'unbanuser'] },
+          ]},
         ],
       }, '$description', null],
     },
@@ -152,11 +147,6 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
             config.show_comment_author,
             { $eq: ['$isComment', true] },
           ],
-        }, {
-          $and: [
-            config.show_ban_user,
-            isBanOrUnbanCondition,
-          ],
         }],
       }, '$author', null],
     },
@@ -180,6 +170,17 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
           { $eq: ['$mod', 'AutoModerator'] },
         ],
       }, '$details', null],
+    },
+    mutedUser: {
+      $cond: [{
+        $and: [
+          config.show_muted_user,
+          { $or: [
+            { $eq: ['$action', 'muteuser'] },
+            { $eq: ['$action', 'unmuteuser'] },
+          ]},
+        ],
+      }, '$author', null],
     },
   };
 }

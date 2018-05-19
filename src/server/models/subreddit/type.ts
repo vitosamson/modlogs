@@ -30,4 +30,5 @@ export interface ISubredditModlogConfig {
   include_moderators?: string[];
   exclude_moderators?: string[];
   show_automod_action_reasons?: boolean;
+  show_muted_user?: boolean;
 }
