@@ -173,5 +173,13 @@ export function createMongoProjectionFromConfig(config: ISubredditModlogConfig):
         $eq: [config.show_moderator_name, true],
       }, '$mod', null],
     },
+    automodActionReason: {
+      $cond: [{
+        $and: [
+          config.show_automod_action_reasons,
+          { $eq: ['$mod', 'AutoModerator'] },
+        ],
+      }, '$details', null],
+    },
   };
 }

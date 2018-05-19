@@ -12,6 +12,8 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/__tests__/'],
   coverageReporters: ['text', 'html'],
   globals: {
-    __TS_CONFIG__: 'src/server/tsconfig.json',
+    'ts-jest': {
+      tsConfigFile: 'src/server/tsconfig.json',
+    },
   },
 };

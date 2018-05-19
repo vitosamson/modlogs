@@ -20,7 +20,7 @@ const Html = (props: Props) => (
       <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
       <title>Mod Logs</title>
       { !isDevelopment && <link rel="stylesheet" href={props.cssHref} /> }
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,600,700&subset=all" />
     </head>
     <body>

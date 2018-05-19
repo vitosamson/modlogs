@@ -56,6 +56,9 @@ show_ban_duration: true
 # show the internal mod note on the ban
 show_ban_description: false
 
+# show the AutoModerator action_reason (https://www.reddit.com/wiki/automoderator/full-documentation#wiki_actions)
+show_automod_action_reasons: false
+
 # a comma-separated list of actions to include or exclude. include takes precedence.
 # by default all actions are included, see below for available actions
 include_actions: []

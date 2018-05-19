@@ -37,7 +37,10 @@ button:focus {
 
 .panel-heading {
   background: #fff !important;
-  border-bottom-width: 2px !important;
+}
+
+.panel-body {
+  border-top: 1px solid #ddd;
 }
 
 .panel-footer {

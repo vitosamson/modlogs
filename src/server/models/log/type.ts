@@ -15,4 +15,7 @@ export interface ILog {
   author?: string | null;
   title?: string | null;
   mod?: string;
+
+  // this is returned to the UI, but is not stored in the db
+  automodActionReason?: string;
 }

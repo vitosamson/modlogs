@@ -133,6 +133,7 @@ module.exports = {
         },
       },
     },
+    disableHostCheck: true,
   },
 
   stats: {

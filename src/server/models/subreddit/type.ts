@@ -29,4 +29,5 @@ export interface ISubredditModlogConfig {
   exclude_actions?: string[];
   include_moderators?: string[];
   exclude_moderators?: string[];
+  show_automod_action_reasons?: boolean;
 }

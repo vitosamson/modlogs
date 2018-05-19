@@ -43,7 +43,7 @@ describe('createMongoQueryFromConfig', () => {
 
 describe('createMongoProjectionFromConfig', () => {
   const subreddit = 'projectiontest';
-  const doQuery = (c: ISubredditModlogConfig) =>
+  const doQuery = (c: ISubredditModlogConfig): Promise<ILog[]> =>
     collection.aggregate([{ $project: createMongoProjectionFromConfig(c) }]).toArray();
   const createFilter = (by: keyof ILog) => (logs: ILog[]) => logs.filter(l => !!l[by]);
   let collection: Collection;
@@ -204,5 +204,19 @@ describe('createMongoProjectionFromConfig', () => {
     logs = await doQuery({ show_ban_description: false });
     expect(logs[0].description).toBeNull();
     expect(logs[1].description).toBeNull();
+  });
+
+  it('automod action reasons', async () => {
+    await collection.insert({
+      action: 'removelink',
+      mod: 'AutoModerator',
+      details: 'Auto-remove text posts with no body',
+    });
+
+    let logs = await doQuery({ show_automod_action_reasons: true });
+    expect(logs[0].automodActionReason).toEqual('Auto-remove text posts with no body');
+
+    logs = await doQuery({ show_automod_action_reasons: false });
+    expect(logs[0].automodActionReason).toBeNull();
   });
 });

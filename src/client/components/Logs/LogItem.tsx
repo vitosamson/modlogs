@@ -48,18 +48,19 @@ export default class LogItem extends React.PureComponent<LogItemProps, State> {
   public render() {
     const { log, onChangeLinkFilter, onChangeAuthorFilter, isAuthenticatedMod } = this.props;
     const { logCreated } = this.state;
+    const modIconClassname = log.mod === 'AutoModerator' ? 'fa fa-robot' : 'fa fa-user';
 
     return (
       <div className="panel panel-default log-item">
         <div className="panel-heading">
           <div className="action">
-            <i className="fa fa-legal" />
+            <i className="fa fa-gavel" />
             { log.action }
           </div>
 
           { log.mod &&
             <div className="mod">
-              <i className="fa fa-user" />
+              <i className={modIconClassname} />
               { log.mod }
             </div>
           }
@@ -70,6 +71,13 @@ export default class LogItem extends React.PureComponent<LogItemProps, State> {
         </div>
 
         <LogContents log={log} />
+
+        { log.automodActionReason &&
+          <div className="panel-body automod-action">
+            AutoModerator action:
+            <span className="reason">{ log.automodActionReason }</span>
+          </div>
+        }
 
         <div className="panel-footer">
           <div className="permalinks">
@@ -141,7 +149,9 @@ class LogContents extends React.PureComponent<{ log: ILog }, null> {
     return (
       <div className="panel-body contents">
         { title && <h5 className="title">{ title }</h5> }
+
         <div className="body">{ body }</div>
+
         { author &&
           <div className="author">
             - <ExternalLink to={log.author} type="user">/u/{ log.author }</ExternalLink>
