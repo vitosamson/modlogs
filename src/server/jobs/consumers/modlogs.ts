@@ -32,14 +32,18 @@ export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
     logger.info('\t no previous logs, starting from the top (this might take a while)');
   }
 
-  const logs = formatLogs(await reddit.getSubredditModLogs(subreddit, { before }));
+  try {
+    const logs = formatLogs(await reddit.getSubredditModLogs(subreddit, { before }));
 
-  logger.info('got %s logs for %s', logs.length, subreddit);
+    logger.info('got %s logs for %s', logs.length, subreddit);
 
-  return processLogs({
-    subreddit,
-    logs: logs.reverse(),
-  });
+    return processLogs({
+      subreddit,
+      logs: logs.reverse(),
+    });
+  } catch (e) {
+    logger.error('Error fetching or processing logs: ', e);
+  }
 
   // await addJob<ProcessLogsJobData>({
   //   jobType: processLogsJobType,

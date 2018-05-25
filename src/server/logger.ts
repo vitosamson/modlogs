@@ -1,9 +1,11 @@
 import * as winston from 'winston';
 
+export type Logger = winston.LoggerInstance;
+
 winston.addColors({ timestamp: 'grey' });
 
 const colorize = (...args: any[]) => winston.config.colorize.apply(winston, args);
-const padZero = (val: number): string|number => {
+const padZero = (val: number): string | number => {
   return val < 10 ? `0${val}` : val;
 };
 const formatLogs = (opts: { level: any; label: string; message: string; }): string => {
@@ -16,7 +18,7 @@ const formatLogs = (opts: { level: any; label: string; message: string; }): stri
   return `${colorizedLabel} ${timestamp} ${opts.message}`;
 };
 
-const createLogger = (label: string): winston.LoggerInstance => {
+const createLogger = (label: string): Logger => {
   winston.loggers.add(label, {
     console: {
       label,
@@ -36,7 +38,7 @@ const createLogger = (label: string): winston.LoggerInstance => {
   return logger;
 };
 
-export default function getLogger(label: string): winston.LoggerInstance {
+export default function getLogger(label: string): Logger {
   if (winston.loggers.has(label)) return winston.loggers.get(label);
   return createLogger(label);
 }

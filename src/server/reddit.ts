@@ -2,7 +2,8 @@ import { inspect } from 'util';
 import * as Snoowrap from 'snoowrap';
 import { SnoowrapOptions, ModAction, PrivateMessage, RedditUser, Comment, Submission } from 'snoowrap';
 import * as yaml from 'js-yaml';
-import getLogger from './logger';
+import { OptionsWithUri as RequestOptions } from 'request';
+import getLogger, { Logger } from './logger';
 import { ISubreddit, ISubredditModlogConfig } from './models/subreddit/type';
 import { Metric, MetricType } from './models/metric';
 
@@ -53,9 +54,11 @@ export const parseUsername = (username: string): string => {
 
 // override snoowrap's rawRequest so we can record the reddit api requests
 class SnoowrapWithMetrics extends Snoowrap {
-  public rawRequest(options: any): Promise<any> {
+  private logger: Logger;
+
+  public rawRequest(options: RequestOptions): Promise<any> {
     let metric: Metric;
-    if (options && options.uri !== 'api/v1/access_token') {
+    if (Metric.metricsEnabled && options && options.uri !== 'api/v1/access_token') {
       metric = new Metric(MetricType.redditApi, {
         baseUrl: options.baseUrl,
         uri: options.uri,
@@ -65,13 +68,16 @@ class SnoowrapWithMetrics extends Snoowrap {
       });
     }
 
-    return super.rawRequest(options).then((...res: any[]) => {
+    return super.rawRequest(options).then((res: any) => {
       if (metric) {
         metric.report(null, {
           rateLimitRemaining: this.ratelimitRemaining,
         });
       }
-      return Promise.resolve(...res);
+
+      this.logger.info('rate limit remaining: ', this.ratelimitRemaining, `(${options.uri})`);
+
+      return Promise.resolve(res);
     }).catch((err: any) => {
       if (metric) metric.report({
         status: err.statusCode,
@@ -79,6 +85,9 @@ class SnoowrapWithMetrics extends Snoowrap {
       }, {
         rateLimitRemaining: this.ratelimitRemaining,
       });
+
+      this.logger.info('rate limit remaining: ', this.ratelimitRemaining, `(${options.uri})`);
+
       return Promise.reject(err);
     });
   }
@@ -86,7 +95,7 @@ class SnoowrapWithMetrics extends Snoowrap {
 
 export class Reddit {
   constructor(opts?: SnoowrapOptions) {
-    const options: SnoowrapOptions = Object.assign({}, defaultSnooOpts, opts);
+    const options: SnoowrapOptions = { ...defaultSnooOpts, ...opts };
     this.r = new SnoowrapWithMetrics(options);
     this.logger.info('running as reddit user', options.username);
     this.logger.info('running under app id', options.clientId);

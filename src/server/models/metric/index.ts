@@ -56,6 +56,8 @@ function normalizeMetric(metric: IMetric): IMetric {
 }
 
 export class Metric {
+  public static metricsEnabled: boolean = !!process.env.ENABLE_METRIC_REPORTING;
+
   constructor(private type: MetricType, private data?: any) {
     this.start = Date.now();
   }
@@ -63,12 +65,15 @@ export class Metric {
   private start: number;
 
   public report(err?: any, data?: any) {
-    if (process.env.ENABLE_METRIC_REPORTING) {
+    if (Metric.metricsEnabled) {
       reportMetric({
         type: this.type,
         timestamp: new Date(),
         duration: Date.now() - this.start,
-        data: Object.assign({}, this.data, data),
+        data: {
+          ...this.data,
+          data,
+        },
         error: err,
       });
     }
@@ -81,5 +86,5 @@ export class Metric {
  */
 export async function flushPendingMetrics(): Promise<void> {
   clearTimeout(pendingMetricsTimeout);
-  return await commitPendingMetrics(pendingMetrics);
+  return commitPendingMetrics(pendingMetrics);
 }
