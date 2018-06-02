@@ -45,15 +45,24 @@ export default class LogFilters extends React.PureComponent<Props, State> {
   public componentWillReceiveProps(nextProps: Props) {
     const nextState: Partial<State> = {};
 
-    if (nextProps.currentLinkFilter !== this.state.linkFilter) {
+    if (
+      nextProps.currentLinkFilter !== this.props.currentLinkFilter &&
+      nextProps.currentLinkFilter !== this.state.linkFilter
+    ) {
       nextState.linkFilter = nextProps.currentLinkFilter;
     }
 
-    if (nextProps.currentAuthorFilter !== this.state.authorFilter) {
+    if (
+      nextProps.currentAuthorFilter !== this.props.currentAuthorFilter &&
+      nextProps.currentAuthorFilter !== this.state.authorFilter
+    ) {
       nextState.authorFilter = nextProps.currentAuthorFilter;
     }
 
-    if (nextProps.currentModFilter !== this.state.modFilter) {
+    if (
+      nextProps.currentModFilter !== this.props.currentModFilter &&
+      nextProps.currentModFilter !== this.state.modFilter
+    ) {
       nextState.modFilter = nextProps.currentModFilter;
     }
 
