@@ -54,6 +54,11 @@ export const parseUsername = (username: string): string => {
 
 // override snoowrap's rawRequest so we can record the reddit api requests
 class SnoowrapWithMetrics extends Snoowrap {
+  constructor(options: SnoowrapOptions, logger: Logger) {
+    super(options);
+    this.logger = logger;
+  }
+
   private logger: Logger;
 
   public rawRequest(options: RequestOptions): Promise<any> {
@@ -96,7 +101,7 @@ class SnoowrapWithMetrics extends Snoowrap {
 export class Reddit {
   constructor(opts?: SnoowrapOptions) {
     const options: SnoowrapOptions = { ...defaultSnooOpts, ...opts };
-    this.r = new SnoowrapWithMetrics(options);
+    this.r = new SnoowrapWithMetrics(options, this.logger);
     this.logger.info('running as reddit user', options.username);
     this.logger.info('running under app id', options.clientId);
     this.r.config({
