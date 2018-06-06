@@ -15,6 +15,7 @@ import { inspect } from 'util';
 import getLogger from '../../logger';
 import reddit from '../../reddit';
 import { getMySubredditsCollection, ISubreddit } from '../../models/subreddit';
+import { createSubredditIndexes } from '../../models/log';
 
 const logger = getLogger('SubredditsConsumer');
 
@@ -32,11 +33,13 @@ export async function fetchSubreddits() {
       const { matchedCount } = await subredditsCollection.updateOne(
         { name: sub.name },
         { ...sub, modlogConfig: subredditConfig, moderators },
-        { upsert: true }
+        { upsert: true },
       );
+
       if (matchedCount) {
         logger.info('updated subreddit', sub.name);
       } else {
+        await createSubredditIndexes(sub.name);
         logger.info('added subreddit', sub.name);
       }
     } catch (err) {

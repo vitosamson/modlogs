@@ -34,7 +34,7 @@
       true,
       {
         "multiline": {
-          "functions": "never",
+          "functions": "always",
           "objects": "always",
           "arrays": "always"
         }
