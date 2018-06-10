@@ -4,7 +4,7 @@ DUMP_DIRECTORY=mongodump-$(date +%Y-%m-%d)
 GZIP_ARCHIVE=$DUMP_DIRECTORY.tgz
 
 cd /tmp
-mongodump -o $DUMP_DIRECTORY -h mongo
+mongodump -o $DUMP_DIRECTORY -h mongo --numParallelCollections=1
 tar czf $GZIP_ARCHIVE $DUMP_DIRECTORY
 
 aws \
