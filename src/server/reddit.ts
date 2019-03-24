@@ -106,6 +106,10 @@ export class Reddit {
     this.logger.info('running under app id', options.clientId);
     this.r.config({
       proxies: false,
+
+      // time in ms to wait between requests to reduce the likelihood that we hit reddit's
+      // rate limit. this may need to be increased to 1000.
+      requestDelay: 500,
     });
   }
 
