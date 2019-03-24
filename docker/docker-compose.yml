@@ -15,6 +15,8 @@ services:
       NODE_ENV: production
     links:
       - mongo
+    ports:
+      - 3000:3000
 
   login:
     image: lipp/login-with:1.1.0
@@ -44,7 +46,7 @@ services:
       - redis
 
   mongo:
-    image: mongo
+    image: mongo:3.4
     ports:
       - 27017:27017
     volumes:
