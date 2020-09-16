@@ -4,7 +4,7 @@ const analyticsEnabled = () => typeof window.ga === 'function' && !!analyticsKey
 
 export function initAnalytics() {
   if (analyticsEnabled()) {
-    window.ga('create', analyticsKey);
+    window.ga('create', analyticsKey, 'auto');
     window.ga('send', 'pageview');
   }
 }
