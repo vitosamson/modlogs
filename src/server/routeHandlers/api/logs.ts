@@ -1,7 +1,12 @@
 import { inspect } from 'util';
 import { Response } from 'express';
 import reddit, { parseUsername } from '../../reddit';
-import { createMongoQueryFromConfig, createMongoProjectionFromConfig, ID_ASCENDING, ID_DESCENDING } from '../../db';
+import {
+  createMongoQueryFromConfig,
+  createMongoProjectionFromConfig,
+  ID_ASCENDING,
+  ID_DESCENDING,
+} from '../../db';
 import { getSubredditConfig } from '../../models/subreddit';
 import getLogger from '../../logger';
 import { getSubredditLogsCollection, ILog } from '../../models/log';
@@ -34,7 +39,10 @@ const noLogs = (isAuthenticatedMod: boolean): ILogsRetVal => ({
   isAuthenticatedMod,
 });
 
-export default async function logsHandler(req: AuthenticatedRequest, res: Response) {
+export default async function logsHandler(
+  req: AuthenticatedRequest,
+  res: Response
+) {
   const isAuthenticatedMod = req.__isAuthenticatedMod;
 
   try {
@@ -45,10 +53,19 @@ export default async function logsHandler(req: AuthenticatedRequest, res: Respon
   }
 }
 
-export async function logs(subredditName: string, query: ILogsQuery, isAuthenticatedMod = false): Promise<ILogsRetVal> {
+export async function logs(
+  subredditName: string,
+  query: ILogsQuery,
+  isAuthenticatedMod = false
+): Promise<ILogsRetVal> {
   const config = await getSubredditConfig(subredditName, isAuthenticatedMod);
   const collection = await getSubredditLogsCollection(subredditName);
-  const limit = Math.min((typeof query.limit === 'string' ? parseInt(query.limit, 10) : query.limit || 25), 100);
+  const limit = Math.min(
+    typeof query.limit === 'string'
+      ? parseInt(query.limit, 10)
+      : query.limit || 25,
+    100
+  );
   const mongoQuery = createMongoQueryFromConfig(config);
   const projection = createMongoProjectionFromConfig(config);
   const sort = {
@@ -98,13 +115,15 @@ export async function logs(subredditName: string, query: ILogsQuery, isAuthentic
 
   // queries that are only available to authenticated mods for the current subreddit
   if (isAuthenticatedMod) {
-    if (query.author) mongoQuery.author = new RegExp(parseUsername(query.author), 'i');
+    if (query.author)
+      mongoQuery.author = new RegExp(parseUsername(query.author), 'i');
     if (query.mod) mongoQuery.mod = new RegExp(parseUsername(query.mod), 'i');
   }
 
   logger.debug(inspect(mongoQuery));
 
-  const aggregation = collection.aggregate<ILog>([])
+  const aggregation = collection
+    .aggregate<ILog>([])
     .match(mongoQuery)
     .sort(sort)
     .limit(limit)
@@ -116,19 +135,31 @@ export async function logs(subredditName: string, query: ILogsQuery, isAuthentic
   const first = aggregatedLogs[0];
   const last = aggregatedLogs[aggregatedLogs.length - 1];
 
-  const hasAfter = last && await collection.find({
-    ...mongoQuery,
-    _id: { $lt: last._id },
-  }).sort({
-    _id: ID_ASCENDING,
-  }).limit(limit).hasNext();
+  const hasAfter =
+    last &&
+    (await collection
+      .find({
+        ...mongoQuery,
+        _id: { $lt: last._id },
+      })
+      .sort({
+        _id: ID_ASCENDING,
+      })
+      .limit(limit)
+      .hasNext());
 
-  const hasBefore = first && await collection.find({
-    ...mongoQuery,
-    _id: { $gt: first._id },
-  }).sort({
-    _id: ID_DESCENDING,
-  }).limit(limit).hasNext();
+  const hasBefore =
+    first &&
+    (await collection
+      .find({
+        ...mongoQuery,
+        _id: { $gt: first._id },
+      })
+      .sort({
+        _id: ID_DESCENDING,
+      })
+      .limit(limit)
+      .hasNext());
 
   return {
     logs: aggregatedLogs,

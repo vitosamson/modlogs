@@ -1,6 +1,13 @@
 import { inspect } from 'util';
 import * as Snoowrap from 'snoowrap';
-import { SnoowrapOptions, ModAction, PrivateMessage, RedditUser, Comment, Submission } from 'snoowrap';
+import {
+  SnoowrapOptions,
+  ModAction,
+  PrivateMessage,
+  RedditUser,
+  Comment,
+  Submission,
+} from 'snoowrap';
 import * as yaml from 'js-yaml';
 import { OptionsWithUri as RequestOptions } from 'request';
 import getLogger, { Logger } from './logger';
@@ -23,8 +30,10 @@ const defaultSnooOpts: SnoowrapOptions = {
 
 const modLogWikiPageName = 'modlog_config';
 
-export const isComment = (fullname: string) => fullname && fullname.startsWith('t1_');
-export const isSubmission = (fullname: string) => fullname && fullname.startsWith('t3_');
+export const isComment = (fullname: string) =>
+  fullname && fullname.startsWith('t1_');
+export const isSubmission = (fullname: string) =>
+  fullname && fullname.startsWith('t3_');
 
 interface ThingIds {
   submissionId: string | null;
@@ -34,7 +43,11 @@ interface ThingIds {
 
 const thingIdRegExp = /\/r\/(\w+)\/?(?:comments)?\/?(\w+)?\/?(?:\w+)?\/?(\w+)?/;
 export function getThingIdsFromLink(link: string): ThingIds {
-  const noResults: ThingIds = { submissionId: null, commentId: null, subreddit: null };
+  const noResults: ThingIds = {
+    submissionId: null,
+    commentId: null,
+    subreddit: null,
+  };
   if (typeof link !== 'string') return noResults;
   const match = link.match(thingIdRegExp);
   if (!match || !match.length) return noResults;
@@ -63,7 +76,11 @@ class SnoowrapWithMetrics extends Snoowrap {
 
   public rawRequest(options: RequestOptions): Promise<any> {
     let metric: Metric;
-    if (Metric.metricsEnabled && options && options.uri !== 'api/v1/access_token') {
+    if (
+      Metric.metricsEnabled &&
+      options &&
+      options.uri !== 'api/v1/access_token'
+    ) {
       metric = new Metric(MetricType.redditApi, {
         baseUrl: options.baseUrl,
         uri: options.uri,
@@ -73,28 +90,43 @@ class SnoowrapWithMetrics extends Snoowrap {
       });
     }
 
-    return super.rawRequest(options).then((res: any) => {
-      if (metric) {
-        metric.report(null, {
-          rateLimitRemaining: this.ratelimitRemaining,
-        });
-      }
+    return super
+      .rawRequest(options)
+      .then((res: any) => {
+        if (metric) {
+          metric.report(null, {
+            rateLimitRemaining: this.ratelimitRemaining,
+          });
+        }
 
-      this.logger.info('rate limit remaining: ', this.ratelimitRemaining, `(${options.uri})`);
+        this.logger.info(
+          'rate limit remaining: ',
+          this.ratelimitRemaining,
+          `(${options.uri})`
+        );
 
-      return Promise.resolve(res);
-    }).catch((err: any) => {
-      if (metric) metric.report({
-        status: err.statusCode,
-        message: err.message,
-      }, {
-        rateLimitRemaining: this.ratelimitRemaining,
+        return Promise.resolve(res);
+      })
+      .catch((err: any) => {
+        if (metric)
+          metric.report(
+            {
+              status: err.statusCode,
+              message: err.message,
+            },
+            {
+              rateLimitRemaining: this.ratelimitRemaining,
+            }
+          );
+
+        this.logger.info(
+          'rate limit remaining: ',
+          this.ratelimitRemaining,
+          `(${options.uri})`
+        );
+
+        return Promise.reject(err);
       });
-
-      this.logger.info('rate limit remaining: ', this.ratelimitRemaining, `(${options.uri})`);
-
-      return Promise.reject(err);
-    });
   }
 }
 
@@ -103,6 +135,7 @@ export class Reddit {
     const options: SnoowrapOptions = { ...defaultSnooOpts, ...opts };
     this.r = new SnoowrapWithMetrics(options, this.logger);
     this.logger.info('running as reddit user', options.username);
+    console.log('ok');
     this.logger.info('running under app id', options.clientId);
     this.r.config({
       proxies: false,
@@ -131,9 +164,14 @@ export class Reddit {
     return formattedSubs;
   }
 
-  public async getSubredditConfig(subreddit: string): Promise<ISubredditModlogConfig | null> {
+  public async getSubredditConfig(
+    subreddit: string
+  ): Promise<ISubredditModlogConfig | null> {
     try {
-      const wikipage = await this.r.getSubreddit(subreddit).getWikiPage(modLogWikiPageName).fetch();
+      const wikipage = await this.r
+        .getSubreddit(subreddit)
+        .getWikiPage(modLogWikiPageName)
+        .fetch();
       const config: ISubredditModlogConfig = yaml.safeLoad(wikipage.content_md);
       return config;
     } catch (err) {
@@ -154,7 +192,15 @@ export class Reddit {
     }
   }
 
-  public async sendMessage({ to, subject, content }: { to: string; subject: string; content: string; }) {
+  public async sendMessage({
+    to,
+    subject,
+    content,
+  }: {
+    to: string;
+    subject: string;
+    content: string;
+  }) {
     try {
       await this.r.composeMessage({
         to,
@@ -166,7 +212,9 @@ export class Reddit {
     }
   }
 
-  public async markMessagesRead(messageFullNames: PrivateMessage[] | string[]): Promise<void> {
+  public async markMessagesRead(
+    messageFullNames: PrivateMessage[] | string[]
+  ): Promise<void> {
     try {
       await this.r.markMessagesAsRead(messageFullNames);
     } catch (err) {
@@ -174,16 +222,23 @@ export class Reddit {
     }
   }
 
-  public async getSubredditModLogs(subredditName: string, opts: { after?: string; before?: string; }): Promise<ModAction[]> {
+  public async getSubredditModLogs(
+    subredditName: string,
+    opts: { after?: string; before?: string }
+  ): Promise<ModAction[]> {
     try {
-      return (await this.r.getSubreddit(subredditName).getModerationLog(opts)).fetchAll();
+      return (await this.r
+        .getSubreddit(subredditName)
+        .getModerationLog(opts)).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];
     }
   }
 
-  public async getSubredditModerators(subredditName: string): Promise<RedditUser[]> {
+  public async getSubredditModerators(
+    subredditName: string
+  ): Promise<RedditUser[]> {
     try {
       return await this.r.getSubreddit(subredditName).getModerators();
     } catch (err) {
