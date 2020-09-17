@@ -26,7 +26,7 @@
     "@types/webpack-env": "^1.13.0",
     "async-props": "vitosamson/async-props",
     "awesome-typescript-loader": "^3.1.2",
-    "bootstrap-sass": "^3.3.7",
+    "bootstrap-sass": "^3.4.1",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.28.0",
