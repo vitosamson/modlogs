@@ -8,6 +8,7 @@ winston.addColors({ timestamp: 'grey' });
 export default function getLogger(label: string): Logger {
   const logger = winston.createLogger({
     format: winston.format.combine(
+      winston.format.splat(),
       winston.format.label({ label }),
       winston.format.timestamp({
         format: 'DD-MM-YY HH:mm:ss',
