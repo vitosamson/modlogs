@@ -6,14 +6,11 @@ module.exports = {
   testRegex: '\\.spec\\.ts',
   moduleFileExtensions: ['ts', 'tsx', 'js'],
   mapCoverage: true,
-  collectCoverageFrom: [
-    'src/server/**/*.ts',
-  ],
   coveragePathIgnorePatterns: ['/node_modules/', '/__tests__/'],
   coverageReporters: ['text', 'html'],
   globals: {
     'ts-jest': {
-      tsConfigFile: 'src/server/tsconfig.json',
+      tsConfigFile: 'src/tsconfig.json',
     },
   },
 };

@@ -1,0 +1,60 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
+@import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/dropdown';
+@import '~bootstrap/scss/input-group';
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/utilities';
+@import '~bootstrap/scss/print';
+@import '~nprogress/nprogress.css';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  background: rgb(245, 245, 245);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  align-items: stretch;
+}
+
+.btn,
+.form-control,
+.input-group-addon {
+  border-radius: 2px;
+}
+
+.form-control:focus {
+  border-color: #aaa;
+  box-shadow: none;
+}
+
+button {
+  border: 1px solid #aaa !important;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h5 {
+    margin: 0;
+  }
+}
+
+a {
+  color: #337ab7;
+}

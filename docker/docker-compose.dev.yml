@@ -1,16 +1,18 @@
 # this compose file contains overrides for docker-compose.yml for use in dev
 
-version: "3"
+version: '3'
 services:
   web:
     environment:
-      PORT: 4245
       LOG_LEVEL: debug
       NODE_ENV: development
+      HOST: modlogs.local:4241
     volumes:
-      - ../src:/app/src:delegated
-      - .:/app/docker:delegated
-    entrypoint: /app/docker/web/dev-entrypoint.sh
+      - ../src:/app/src
+      - ../next.config.js:/app/next.config.js
+      - .:/app/docker
+      - /tmp/modlogs/.next:/app/src/.next
+    entrypoint: yarn dev
 
   login:
     environment:
@@ -18,13 +20,13 @@ services:
 
   mongo:
     volumes:
-      - /tmp/modlogs/mongo/data:/data
-      - /tmp/modlogs/mongo/data/db:/data/db
-      - /tmp/modlogs/mongo/data/configdb:/data/configdb
+      - ../mongo/data:/data
+      - ../mongo/data/db:/data/db
+      - ../mongo/data/configdb:/data/configdb
 
   redis:
     volumes:
-      - /tmp/modlogs/redis:/data
+      - ../redis:/data
 
   nginx:
     image: vitosamson/modlogs:nginx-dev

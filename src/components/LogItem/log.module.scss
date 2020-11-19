@@ -1,0 +1,81 @@
+@import '../../styles/variables';
+
+.log-item {
+  margin-bottom: 20px;
+}
+
+.header {
+  display: flex;
+}
+
+.mod {
+  flex-grow: 1;
+}
+
+.time,
+.mod,
+.action {
+  display: inline-block;
+  margin-right: 15px;
+
+  i {
+    margin-right: 5px;
+    color: #444;
+  }
+}
+
+.time {
+  float: right;
+  margin-right: 0;
+
+  @include media-breakpoint-down(xs) {
+    float: none;
+  }
+}
+
+.title {
+  margin-top: 0;
+}
+
+.quote {
+  font-size: 1em;
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  font-family: verdana, arial, helvetica, sans-serif; // match reddit's default content font
+  padding: 10px 20px;
+  border-left: 5px solid #eee;
+}
+
+.author {
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.automod-action {
+  padding: 8px 15px;
+
+  .reason {
+    margin-left: 5px;
+  }
+}
+
+.filter-by {
+  float: right;
+}
+
+.permalinks {
+  display: inline-block;
+
+  a:not(:last-child) {
+    margin-right: 15px;
+  }
+}
+
+.filter-toggle {
+  cursor: pointer;
+
+  i {
+    font-size: 0.8em;
+    margin-left: 5px;
+  }
+}

@@ -1,0 +1,79 @@
+@import '../../styles/variables';
+
+.limit-type-container {
+  display: flex;
+  flex-direction: row;
+
+  @media (max-width: 1200px) {
+    flex-direction: column;
+  }
+}
+
+.limit-selector,
+.type-selector {
+  margin-bottom: 10px;
+}
+
+.limit-selector {
+  margin-right: 10px;
+}
+
+.toggle-actions {
+  margin-bottom: 0;
+  cursor: pointer;
+  color: #444;
+
+  &:hover {
+    color: #444;
+  }
+
+  &.is-open {
+    margin-bottom: 10px;
+  }
+
+  i {
+    margin-left: 5px;
+  }
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.action-type {
+  font-weight: normal;
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+
+  &.show-all {
+    display: block;
+  }
+
+  input {
+    margin-right: 5px;
+  }
+}
+
+.input-group {
+  button {
+    height: 34px; // normalize to height of adjacent input
+  }
+}
+
+.filter-field {
+  margin-bottom: 10px;
+}
+
+.clear-filter {
+  cursor: pointer;
+  color: red;
+  font-size: 1.15em;
+  opacity: 0.6;
+  margin-left: 4px;
+  line-height: normal;
+
+  &:hover {
+    opacity: 1;
+  }
+}

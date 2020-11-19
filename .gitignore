@@ -2,3 +2,9 @@ node_modules
 build
 coverage
 mongodump*
+.next
+mongo
+data
+.vscode
+.DS_Store
+env.sh

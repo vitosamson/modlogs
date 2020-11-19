@@ -1,0 +1,67 @@
+@import '../../../styles/variables';
+
+.logs {
+  flex: 1;
+  display: flex;
+  margin-top: 10px;
+
+  // TODO: dropping the filter section below the logs on mobile isn't great UX
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+  }
+}
+
+.log-item-container {
+  flex: 2;
+  position: relative;
+
+  @include media-breakpoint-up(md) {
+    margin-right: 10px;
+  }
+}
+
+.logs-fetching-overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.log-navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px 0 10px 0;
+
+  button {
+    display: block;
+    width: 100%;
+
+    &.newest {
+      flex: 2;
+      margin-right: 5px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    &.newer {
+      margin-right: 5px;
+    }
+  }
+}
+
+.filter-container {
+  flex: 1;
+
+  @include media-breakpoint-up(md) {
+    margin-left: 10px;
+  }
+}
+
+.view-all {
+  margin-top: 20px;
+  text-align: center;
+}

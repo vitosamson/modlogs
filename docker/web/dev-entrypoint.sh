@@ -1,4 +1,4 @@
-#!/bin/sh
+# #!/bin/sh
 
-yarn ui:dev &
-yarn server:dev
+# yarn ui:dev &
+# yarn server:dev

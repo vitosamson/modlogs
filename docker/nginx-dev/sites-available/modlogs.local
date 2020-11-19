@@ -1,5 +1,5 @@
 upstream web_app {
-  server web:4241;
+  server web:3000;
 }
 
 server {

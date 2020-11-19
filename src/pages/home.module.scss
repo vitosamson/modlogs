@@ -1,0 +1,13 @@
+@import '../styles/variables';
+
+.home {
+  font-size: 1.4em;
+  color: #949494;
+  margin-top: 40px;
+  text-align: center;
+  flex: 1;
+
+  @include media-breakpoint-down(xs) {
+    font-size: 1.2em;
+  }
+}

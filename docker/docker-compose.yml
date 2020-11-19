@@ -1,7 +1,8 @@
-version: "3"
+version: '3'
 services:
   web:
     image: vitosamson/modlogs:web
+    container_name: web
     environment:
       APP_ID:
       APP_SECRET:
@@ -13,13 +14,14 @@ services:
       PORT: 3000
       LOG_LEVEL: info
       NODE_ENV: production
-    links:
-      - mongo
+    # links:
+    #   - mongo
     ports:
       - 3000:3000
 
   login:
-    image: lipp/login-with:1.1.0
+    image: lipp/login-with:latest
+    container_name: login
     environment:
       LW_SUBDOMAIN: login.modlogs.fyi
       LW_SESSION_SECRET:
@@ -29,6 +31,7 @@ services:
 
   worker:
     image: vitosamson/modlogs:worker
+    container_name: worker
     environment:
       APP_ID:
       APP_SECRET:
@@ -41,12 +44,13 @@ services:
       AWS_SECRET_ACCESS_KEY:
       GLACIER_BACKUP_VAULT:
       GLACIER_BACKUP_REGION:
-    links:
-      - mongo
-      - redis
+    # links:
+    #   - mongo
+    #   - redis
 
   mongo:
     image: mongo:3.4
+    container_name: mongo
     ports:
       - 27017:27017
     volumes:
@@ -56,6 +60,7 @@ services:
 
   redis:
     image: redis:alpine
+    container_name: redis
     ports:
       - 6379:6379
     volumes:
@@ -63,8 +68,9 @@ services:
 
   nginx:
     image: vitosamson/modlogs:nginx
+    container_name: nginx
     ports:
       - 80:80
-    links:
-      - web
-      - login
+    # links:
+    #   - web
+    #   - login

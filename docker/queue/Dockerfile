@@ -6,7 +6,7 @@ FROM redis:alpine
 ###
 
 ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 7.10.0
+ENV NODE_VERSION 12.19.1
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
@@ -51,7 +51,7 @@ RUN addgroup -g 1000 node \
     && rm -Rf "node-v$NODE_VERSION" \
     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
 
-ENV YARN_VERSION 0.24.4
+ENV YARN_VERSION 1.22.5
 
 RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg \
   && for key in \
