@@ -32,7 +32,7 @@
     "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
     "test": "NODE_ENV=test jest",
     "test:watch": "yarn test --watch",
-    "test:ci": "yarn test -- -i"
+    "test:ci": "yarn test --forceExit"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.2",

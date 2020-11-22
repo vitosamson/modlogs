@@ -15,7 +15,7 @@ describe('User Report Generator', () => {
 
   afterAll(async () => {
     const collection = await getSubredditLogsCollection(subName);
-    collection.remove({});
+    collection.deleteMany({});
   });
 
   it('is a function', () => {

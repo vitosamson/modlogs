@@ -13,9 +13,6 @@ RUN mkdir /app && cp -a /tmp/node_modules /app
 COPY . /app
 WORKDIR /app
 
-# RUN rm -rf build
-# RUN yarn run clean
-# RUN yarn server:build
-# RUN yarn ui:build
+RUN yarn build
 
 ENTRYPOINT ["yarn", "server:run"]
