@@ -26,7 +26,9 @@ export default function LogContents({ log }: Props) {
           <blockquote
             className={styles.quote}
             dangerouslySetInnerHTML={{
-              __html: mdToHtml(log.content || noContent),
+              __html: mdToHtml(log.content || noContent, {
+                omitPreTagForCode: true,
+              }),
             }}
           />
         );
@@ -38,7 +40,9 @@ export default function LogContents({ log }: Props) {
           <blockquote
             className={styles.quote}
             dangerouslySetInnerHTML={{
-              __html: mdToHtml(log.content || noContent),
+              __html: mdToHtml(log.content || noContent, {
+                omitPreTagForCode: true,
+              }),
             }}
           />
         );

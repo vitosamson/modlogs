@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import type { AuthResponse } from '../utils/getAuthStatus';
 import type { ISubreddit } from '../models/subreddit';
 import { initAnalytics, trackPage } from '../analytics';
+import Footer from '../components/Footer';
 import '../styles/main.scss';
 
 interface Props extends AppProps {
@@ -57,6 +58,7 @@ export default function ModLogsApp({
         {/* @ts-ignore not sure why TS thinks Component may render undefined */}
         <Component {...pageProps} />
       </main>
+      <Footer />
     </>
   );
 }

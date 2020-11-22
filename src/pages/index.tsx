@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './home.module.scss';
-import { ExternalLink } from '../components/ExternalLink';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -12,11 +12,7 @@ export default function Home() {
       <p>Get started by selecting a subreddit from the dropdown above.</p>
       <p>
         If you're a moderator and want to use Mod Logs in your subreddit, check
-        out the{' '}
-        <ExternalLink to="https://github.com/vitosamson/modlogs/tree/master/ModeratorInstructions.md">
-          Moderator Help
-        </ExternalLink>
-        .
+        out the <Link href="/mods">Moderator Instructions</Link>.
       </p>
     </section>
   );

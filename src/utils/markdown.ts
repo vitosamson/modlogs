@@ -6,14 +6,13 @@ import domPurify from 'dompurify';
  * issues with no way to force a word-break on long lines (e.g. a long URL inside a code block).
  * Instead, render the code just inside a <code> tag, which does break as expected.
  */
-const renderer = new Renderer();
-renderer.code = (code, infostring, escaped) => {
+const codeRenderer = new Renderer();
+codeRenderer.code = (code, infostring, escaped) => {
   return `<p><code>${code}</code></p>`;
 };
 
 marked.setOptions({
   gfm: true,
-  renderer,
 });
 
 // TODO: find a different html sanitizer that doesn't rely on jsdom for SSR
@@ -25,8 +24,19 @@ if (typeof window === 'undefined') {
   });
 }
 
-export function mdToHtml(markdown: string) {
-  return sanitize(marked(markdown));
+interface Options {
+  omitPreTagForCode?: boolean;
+}
+
+export function mdToHtml(
+  markdown: string,
+  { omitPreTagForCode }: Options = {}
+) {
+  return sanitize(
+    marked(markdown, {
+      renderer: omitPreTagForCode ? codeRenderer : undefined,
+    })
+  );
 }
 
 type Cell = string | number;
