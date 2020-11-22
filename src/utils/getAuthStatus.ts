@@ -4,6 +4,7 @@ import { getCookieParser } from 'next/dist/next-server/server/api-utils';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import getLogger from '../logger';
 import { getSubreddit } from '../models/subreddit';
+import { isTest } from '../config';
 
 interface JWT {
   accessToken: string;
@@ -22,7 +23,7 @@ export interface AuthResponse {
 
 const logger = getLogger('server:getAuthStatus');
 
-if (!process.env.LW_JWT_SECRET) {
+if (!isTest && !process.env.LW_JWT_SECRET) {
   logger.error('Must provide the LW_JWT_SECRET variable.');
   process.exit(1);
 }

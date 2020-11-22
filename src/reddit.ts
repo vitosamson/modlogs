@@ -13,6 +13,7 @@ import { OptionsWithUri as RequestOptions } from 'request';
 import getLogger, { Logger } from './logger';
 import { ISubreddit, ISubredditModlogConfig } from './models/subreddit/type';
 import { Metric, MetricType } from './models/metric';
+import { isTest } from './config';
 
 const appId = process.env.APP_ID;
 const appSecret = process.env.APP_SECRET;
@@ -20,7 +21,10 @@ const redditUsername = process.env.REDDIT_USER;
 const redditPassword = process.env.REDDIT_PASSWORD;
 const userAgent = process.env.USER_AGENT;
 
-if (!appId || !appSecret || !redditUsername || !redditPassword || !userAgent) {
+if (
+  !isTest &&
+  (!appId || !appSecret || !redditUsername || !redditPassword || !userAgent)
+) {
   console.log(
     'Must provide APP_ID, APP_SECRET, REDDIT_USER, REDDIT_PASSWORD, and USER_AGENT variables.'
   );
@@ -28,7 +32,9 @@ if (!appId || !appSecret || !redditUsername || !redditPassword || !userAgent) {
 }
 
 const defaultSnooOpts: SnoowrapOptions = {
-  userAgent,
+  // The non-null assertion is needed only because of the !isTest check above.
+  // But no requests are actually made to reddit during tests so it's fine.
+  userAgent: userAgent!,
   username: redditUsername,
   password: redditPassword,
   clientId: appId,
