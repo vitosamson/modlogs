@@ -37,7 +37,7 @@ RUN mkdir /app && cp -a /tmp/node_modules /app
 COPY . /app
 WORKDIR /app
 RUN rm -rf build
-RUN yarn server:build
+RUN yarn jobs:build
 
 ADD docker/worker/entrypoint.sh /root/entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/root/entrypoint.sh"]

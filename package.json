@@ -28,8 +28,7 @@
     "dev": "next dev src",
     "build": "next build src",
     "start": "next start src",
-    "jobs:build": "cd src/jobs && tsc",
-    "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
+    "jobs:build": "tsc -p src/jobs/tsconfig.json",
     "test": "NODE_ENV=test jest",
     "test:watch": "yarn test --watch",
     "test:ci": "yarn test --forceExit"
