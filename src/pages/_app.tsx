@@ -55,7 +55,6 @@ export default function ModLogsApp({
       </Head>
       <Header username={auth.username} subreddits={subreddits} />
       <main className="app-container">
-        {/* @ts-ignore not sure why TS thinks Component may render undefined */}
         <Component {...pageProps} />
       </main>
       <Footer />
@@ -67,37 +66,26 @@ ModLogsApp.getInitialProps = async (context: AppContext) => {
   const appProps = await App.getInitialProps(context);
   const host = context.ctx.req ? 'http://localhost:3000/api' : '/api';
 
-  try {
-    const [authRes, subredditsRes] = await Promise.all([
-      fetch(`${host}/auth?subreddit=${context.router.query.subreddit || ''}`, {
-        credentials: 'same-origin',
-        headers: context.ctx.req
-          ? {
-              cookie: context.ctx.req.headers.cookie || '',
-            }
-          : {},
-      }),
-      fetch(`${host}/subreddits`),
-    ]);
+  const [authRes, subredditsRes] = await Promise.all([
+    fetch(`${host}/auth?subreddit=${context.router.query.subreddit || ''}`, {
+      credentials: 'same-origin',
+      headers: context.ctx.req
+        ? {
+            cookie: context.ctx.req.headers.cookie || '',
+          }
+        : {},
+    }),
+    fetch(`${host}/subreddits`),
+  ]);
 
-    const [auth, subreddits] = await Promise.all([
-      authRes.json(),
-      subredditsRes.json(),
-    ]);
+  const [auth, subreddits] = await Promise.all([
+    authRes.json(),
+    subredditsRes.json(),
+  ]);
 
-    return {
-      ...appProps,
-      auth,
-      subreddits,
-    };
-  } catch {
-    return {
-      ...appProps,
-      auth: {
-        username: null,
-        isAuthenticatedMod: false,
-      },
-      subreddits: [],
-    };
-  }
+  return {
+    ...appProps,
+    auth,
+    subreddits,
+  };
 };

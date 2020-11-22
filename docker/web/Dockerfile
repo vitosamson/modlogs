@@ -15,4 +15,4 @@ WORKDIR /app
 
 RUN yarn build
 
-ENTRYPOINT ["yarn", "server:run"]
+ENTRYPOINT ["yarn", "start"]

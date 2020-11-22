@@ -1,0 +1,40 @@
+@import '../styles/variables.scss';
+
+// These are pretty much copied from the next.js default 404 view
+
+.notFound {
+  color: #000;
+  background: $body-background-color;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 140px);
+}
+
+.code {
+  display: inline-block;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  margin: 0;
+  padding: 10px 23px 10px 0;
+  font-size: 48px;
+  font-weight: 300;
+  vertical-align: top;
+}
+
+.textWrapper {
+  display: inline-block;
+  text-align: left;
+  line-height: 78px;
+  height: 78px;
+  vertical-align: middle;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: inherit;
+  margin: 0 0 0 20px;
+  padding: 0;
+}

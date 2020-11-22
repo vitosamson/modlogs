@@ -11,9 +11,9 @@ export default function Footer() {
       </ExternalLink>
       |
       <ExternalLink to="https://github.com/vitosamson/modlogs">
-        source on github
+        source
       </ExternalLink>
-      |<Link href="/mods">moderator instructions</Link>
+      |<Link href="/mods">mod instructions</Link>
     </footer>
   );
 }

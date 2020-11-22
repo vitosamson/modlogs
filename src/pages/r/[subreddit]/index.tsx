@@ -47,6 +47,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   );
 
   return {
-    props: { ...logsData, isAuthenticatedMod },
+    props: {
+      ...logsData,
+      isAuthenticatedMod,
+    },
   };
 };

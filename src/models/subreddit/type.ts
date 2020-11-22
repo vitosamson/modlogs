@@ -1,5 +1,6 @@
 export interface ISubreddit {
   id: string;
+  _id?: string;
   name: string;
   nameLowercase: string;
   description: string;
