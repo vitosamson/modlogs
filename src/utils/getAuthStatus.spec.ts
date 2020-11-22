@@ -1,70 +1,69 @@
-// TODO: fix these tests
+import * as jwt from 'jsonwebtoken';
+import { getAuthStatus } from './getAuthStatus';
+import { getMySubredditsCollection } from '../models/subreddit';
+import { IncomingMessage } from 'http';
 
-// import * as jwt from 'jsonwebtoken';
-// import { Response } from 'express';
-// // import modLoginMiddleware, { AuthenticatedRequest } from '../modLoginMiddleware';
-// import { getAuthStatus, AuthResponse } from './getAuthStatus';
-// import { getMySubredditsCollection } from '../../models/subreddit';
+describe('getAuthStatus', () => {
+  const secret = 'foo';
+  const subName = 'mysub';
+  const username = 'theuser';
+  const jwtCookie = jwt.sign(
+    {
+      profile: {
+        username,
+      },
+    },
+    secret
+  );
 
-// describe('modLoginMiddleware', () => {
-//   const secret = 'foo';
-//   const subName = 'mysub';
-//   const username = 'theuser';
-//   const jwtCookie = jwt.sign({
-//     profile: {
-//       username,
-//     },
-//   }, secret);
+  beforeAll(async () => {
+    process.env.LW_JWT_SECRET = secret;
+    const collection = await getMySubredditsCollection();
+    await collection.insertOne({
+      name: subName,
+      moderators: [username],
+    });
+  });
 
-//   beforeAll(async () => {
-//     process.env.LW_JWT_SECRET = secret;
-//     const collection = await getMySubredditsCollection();
-//     await collection.insert({
-//       name: subName,
-//       moderators: [username],
-//     });
-//   });
+  afterAll(async () => {
+    (await getMySubredditsCollection()).remove({});
+  });
 
-//   afterAll(async () => {
-//     (await getMySubredditsCollection()).remove({});
-//   });
+  it('provides the username if the user is logged in', async () => {
+    const req = {
+      headers: {
+        cookie: `jwt=${jwtCookie}`,
+      },
+    } as IncomingMessage;
+    const auth = await getAuthStatus(req, subName);
+    expect(auth.username).toEqual(username);
+  });
 
-//   it('sets req.__user if the user is logged in', done => {
-//     const req = {
-//       cookies: { jwt: jwtCookie },
-//       params: { subreddit: subName },
-//     } as AuthenticatedRequest;
-//     modLoginMiddleware(req, ({} as Response), () => {
-//       expect(req.__user).toEqual('theuser');
-//       done();
-//     });
-//   });
+  it('indicates whether the user is a moderator of the subreddit', async () => {
+    let req = {
+      headers: {
+        cookie: `jwt=${jwtCookie}`,
+      },
+    } as IncomingMessage;
+    let auth = await getAuthStatus(req, subName);
+    expect(auth.isAuthenticatedMod).toBe(true);
 
-//   it('sets req.__isAuthenticatedMod to true if the current user is a moderator of the subreddit', done => {
-//     const req = {
-//       cookies: { jwt: jwtCookie },
-//       params: { subreddit: subName },
-//     } as AuthenticatedRequest;
-//     modLoginMiddleware(req, ({} as Response), () => {
-//       expect(req.__isAuthenticatedMod).toBe(true);
-//       done();
-//     });
-//   });
+    auth = await getAuthStatus(req, 'someothersub');
+    expect(auth.isAuthenticatedMod).toBe(false);
 
-//   it('sets req.__isAuthenticatedMod to false if the user is not a mod', done => {
-//     const req = {
-//       cookies: {
-//         jwt: jwt.sign({
-//           profile: {
-//             username: 'someotheruser',
-//           },
-//         }, secret),
-//       },
-//       params: { subreddit: subName },
-//     } as AuthenticatedRequest;
-//     modLoginMiddleware(req, ({} as Response), () => {
-//       expect(req.__isAuthenticatedMod).toBe(false);
-//       done();
-//     });
-//   });
-// });
+    req = {
+      headers: {
+        cookie: `jwt=${jwt.sign(
+          {
+            profile: {
+              username: 'someotheruser',
+            },
+          },
+          secret
+        )}`,
+      },
+    } as IncomingMessage;
+    auth = await getAuthStatus(req, subName);
+    expect(auth.isAuthenticatedMod).toBe(false);
+  });
+});

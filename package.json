@@ -6,7 +6,6 @@
   "dependencies": {
     "bootstrap": "^4.5.3",
     "dompurify": "^2.2.2",
-    "es6-shim": "^0.35.3",
     "js-yaml": "^3.14.0",
     "jsdom": "^16.4.0",
     "jsonwebtoken": "^8.5.1",
@@ -21,10 +20,8 @@
     "react-dom": "^17.0.1",
     "react-select": "^3.1.0",
     "react-stickynode": "^3.0.4",
-    "sass": "^1.29.0",
     "snoowrap": "^1.21.0",
     "swr": "^0.3.8",
-    "typescript": "^4.0.5",
     "winston": "^3.3.3"
   },
   "scripts": {
@@ -33,14 +30,14 @@
     "start": "next start src",
     "jobs:build": "cd src/jobs && tsc",
     "lint": "tslint -e 'src/**/*.d.ts' 'src/**/*.ts' 'src/**/*.tsx'",
-    "test": "NODE_ENV=test jest --forceExit",
-    "test:watch": "yarn test -- --watch",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "yarn test --watch",
     "test:ci": "yarn test -- -i"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.2",
     "@types/dompurify": "^2.0.4",
-    "@types/jest": "^19.2.4",
+    "@types/jest": "^26.0.15",
     "@types/js-yaml": "^3.12.5",
     "@types/jsdom": "^16.2.5",
     "@types/jsonwebtoken": "^8.5.0",
@@ -54,8 +51,10 @@
     "@types/react-select": "^3.0.26",
     "@types/react-stickynode": "^3.0.1",
     "@types/request": "^2.48.5",
-    "jest": "^20.0.4",
+    "jest": "^26.6.3",
     "prettier": "^2.1.2",
-    "ts-jest": "^20.0.6"
+    "sass": "^1.29.0",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.0.5"
   }
 }

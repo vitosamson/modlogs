@@ -31,9 +31,9 @@ export default function FilterField({
   );
 
   return (
-    <Form onSubmit={onSubmit} className={styles['filter-field']}>
+    <Form onSubmit={onSubmit}>
       <fieldset disabled={disabled}>
-        <Form.Group>
+        <Form.Group className={styles['filter-field']}>
           <InputGroup>
             {actualValue && (
               <InputGroup.Prepend>

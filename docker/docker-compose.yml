@@ -14,10 +14,10 @@ services:
       PORT: 3000
       LOG_LEVEL: info
       NODE_ENV: production
-    # links:
-    #   - mongo
     ports:
       - 3000:3000
+    depends_on:
+      - mongo
 
   login:
     image: lipp/login-with:latest
@@ -44,9 +44,9 @@ services:
       AWS_SECRET_ACCESS_KEY:
       GLACIER_BACKUP_VAULT:
       GLACIER_BACKUP_REGION:
-    # links:
-    #   - mongo
-    #   - redis
+    depends_on:
+      - mongo
+      - redis
 
   mongo:
     image: mongo:3.4
@@ -71,6 +71,6 @@ services:
     container_name: nginx
     ports:
       - 80:80
-    # links:
-    #   - web
-    #   - login
+    depends_on:
+      - web
+      - login

@@ -21,9 +21,8 @@ export interface AuthResponse {
 }
 
 const logger = getLogger('server:getAuthStatus');
-const jwtSecret = process.env.LW_JWT_SECRET as string;
 
-if (!jwtSecret) {
+if (!process.env.LW_JWT_SECRET) {
   logger.error('Must provide the LW_JWT_SECRET variable.');
   process.exit(1);
 }
@@ -32,6 +31,9 @@ export async function getAuthStatus(
   req: IncomingMessage,
   subredditName?: string
 ): Promise<AuthResponse> {
+  // This needs to be inside this function since the unit test sets the env var dynamically
+  const jwtSecret = process.env.LW_JWT_SECRET as string;
+
   try {
     /**
      * req.cookies isn't available in getServerSideProps, so use this workaround:
