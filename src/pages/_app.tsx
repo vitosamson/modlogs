@@ -67,26 +67,37 @@ ModLogsApp.getInitialProps = async (context: AppContext) => {
   const appProps = await App.getInitialProps(context);
   const host = context.ctx.req ? 'http://localhost:3000/api' : '/api';
 
-  const [authRes, subredditsRes] = await Promise.all([
-    fetch(`${host}/auth?subreddit=${context.router.query.subreddit || ''}`, {
-      credentials: 'same-origin',
-      headers: context.ctx.req
-        ? {
-            cookie: context.ctx.req.headers.cookie || '',
-          }
-        : {},
-    }),
-    fetch(`${host}/subreddits`),
-  ]);
+  try {
+    const [authRes, subredditsRes] = await Promise.all([
+      fetch(`${host}/auth?subreddit=${context.router.query.subreddit || ''}`, {
+        credentials: 'same-origin',
+        headers: context.ctx.req
+          ? {
+              cookie: context.ctx.req.headers.cookie || '',
+            }
+          : {},
+      }),
+      fetch(`${host}/subreddits`),
+    ]);
 
-  const [auth, subreddits] = await Promise.all([
-    authRes.json(),
-    subredditsRes.json(),
-  ]);
+    const [auth, subreddits] = await Promise.all([
+      authRes.json(),
+      subredditsRes.json(),
+    ]);
 
-  return {
-    ...appProps,
-    auth,
-    subreddits,
-  };
+    return {
+      ...appProps,
+      auth,
+      subreddits,
+    };
+  } catch {
+    return {
+      ...appProps,
+      auth: {
+        username: null,
+        isAuthenticatedMod: false,
+      },
+      subreddits: [],
+    };
+  }
 };
