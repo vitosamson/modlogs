@@ -5,15 +5,16 @@ RUN apk add --no-cache \
   rsyslog \
   bash \
   curl \
-  python \
+  python3 \
   mongodb-tools
+
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
 
 # setup aws-cli for db backups to glacier
 WORKDIR /tmp
-RUN curl -O https://bootstrap.pypa.io/get-pip.py
-RUN python get-pip.py --user
 ENV PATH="/root/.local/bin:$PATH"
-RUN pip install awscli --upgrade --user
+RUN pip3 install awscli --upgrade --user
 
 ADD docker/worker/crontab /tmp/crontab
 RUN crontab /tmp/crontab && rm /tmp/crontab
