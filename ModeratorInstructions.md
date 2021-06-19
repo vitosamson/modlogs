@@ -18,7 +18,7 @@ That's it.
 
 ## Permissions
 
-You can add [/u/modlogs](https://www.reddit.com/user/modlogs) as a moderator with no permissions, but if you want to use a custom configuration you'll need to give it the `wiki` permission.
+You can add [/u/modlogs](https://www.reddit.com/user/modlogs) as a moderator with no permissions, but if you want to use a custom configuration you'll need to give it the `wiki` permission. Alternatively, you can allow all users to view the page by enabling wikis in the subreddit's settings. If the subreddit already enables wikis then no special permissions are needed.
 
 ## Configuration
 
