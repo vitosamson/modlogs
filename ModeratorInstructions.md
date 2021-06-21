@@ -34,15 +34,15 @@ show_comment_links: false
 show_submission_links: false
 
 # show the contents of the moderated comment or submission
-show_comment_contents: false
-show_submission_contents: false
+show_comment_contents: true
+show_submission_contents: true
 
 # show the author of the comment or submission
 show_comment_author: false
 show_submission_author: false
 
 # show the submission title
-show_submission_title: false
+show_submission_title: true
 
 # show the name of the moderator who performed the action
 show_moderator_name: false
