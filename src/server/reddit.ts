@@ -100,9 +100,7 @@ class SnoowrapWithMetrics extends Snoowrap {
         }
 
         this.logger.info(
-          'rate limit remaining: ',
-          this.ratelimitRemaining,
-          `(${options.uri})`
+          `rate limit remaining: ${this.ratelimitRemaining} (${options.uri})`
         );
 
         return Promise.resolve(res);
@@ -120,9 +118,7 @@ class SnoowrapWithMetrics extends Snoowrap {
           );
 
         this.logger.info(
-          'rate limit remaining: ',
-          this.ratelimitRemaining,
-          `(${options.uri})`
+          `rate limit remaining: ${this.ratelimitRemaining} (${options.uri})`
         );
 
         return Promise.reject(err);
@@ -134,9 +130,8 @@ export class Reddit {
   constructor(opts?: SnoowrapOptions) {
     const options: SnoowrapOptions = { ...defaultSnooOpts, ...opts };
     this.r = new SnoowrapWithMetrics(options, this.logger);
-    this.logger.info('running as reddit user', options.username);
-    console.log('ok');
-    this.logger.info('running under app id', options.clientId);
+    this.logger.info(`running as reddit user ${options.username}`);
+    this.logger.info(`running under app id ${options.clientId}`);
     this.r.config({
       proxies: false,
 
@@ -227,9 +222,9 @@ export class Reddit {
     opts: { after?: string; before?: string }
   ): Promise<ModAction[]> {
     try {
-      return (await this.r
-        .getSubreddit(subredditName)
-        .getModerationLog(opts)).fetchAll();
+      return (
+        await this.r.getSubreddit(subredditName).getModerationLog(opts)
+      ).fetchAll();
     } catch (err) {
       this.logger.error(inspect(err));
       return [];

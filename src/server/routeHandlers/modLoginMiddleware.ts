@@ -20,11 +20,18 @@ export interface AuthenticatedRequest extends Request {
 
 const logger = getLogger('server');
 
-export default async function modLoginMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export default async function modLoginMiddleware(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    const decodedJwt = jwt.verify(req.cookies.jwt, process.env.LW_JWT_SECRET) as JWT;
+    const decodedJwt = jwt.verify(
+      req.cookies.jwt,
+      process.env.LW_JWT_SECRET
+    ) as JWT;
     const { username } = decodedJwt.profile;
-    logger.debug('username:', username, 'subreddit:', req.params.subreddit);
+    logger.debug(`username: ${username}, subreddit: ${req.params.subreddit}`);
 
     if (username) {
       req.__user = username;
@@ -33,7 +40,9 @@ export default async function modLoginMiddleware(req: AuthenticatedRequest, res:
     }
 
     const subreddit = await getSubreddit(req.params.subreddit);
-    req.__isAuthenticatedMod = !!subreddit.moderators.find(m => m.toLowerCase() === username.toLowerCase());
+    req.__isAuthenticatedMod = !!subreddit.moderators.find(
+      m => m.toLowerCase() === username.toLowerCase()
+    );
   } catch (e) {
     req.__user = null;
     req.__isAuthenticatedMod = false;

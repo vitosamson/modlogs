@@ -9,9 +9,15 @@ const queue = kue.createQueue({
   redis: REDIS_URL,
 });
 
-logger.info('connected to queue at', REDIS_URL);
+logger.info(`connected to queue at ${REDIS_URL}`);
 
-export const addJob = <D>({ jobType, data }: { jobType: string; data?: D }): Promise<kue.Job> => {
+export const addJob = <D>({
+  jobType,
+  data,
+}: {
+  jobType: string;
+  data?: D;
+}): Promise<kue.Job> => {
   const job = queue.create(jobType, data).removeOnComplete(true);
 
   return new Promise<kue.Job>((resolve, reject) => {
@@ -23,25 +29,43 @@ export const addJob = <D>({ jobType, data }: { jobType: string; data?: D }): Pro
 };
 
 type JobProcessor = (data: any) => Promise<any>;
-interface AddJobProcessorParams { jobType: string; concurrency?: number; processor: JobProcessor; }
-export const addJobProcessor = <D>({ jobType, concurrency, processor }: AddJobProcessorParams): void => {
+interface AddJobProcessorParams {
+  jobType: string;
+  concurrency?: number;
+  processor: JobProcessor;
+}
+export const addJobProcessor = <D>({
+  jobType,
+  concurrency,
+  processor,
+}: AddJobProcessorParams): void => {
   queue.process(jobType, concurrency, async (job: kue.Job, cb: any) => {
     try {
       await processor(job.data as D);
       cb();
     } catch (err) {
-      logger.error('%s job failure', jobType);
+      logger.error(`${jobType} job failure with data: ${job.data}`);
       logger.error(inspect(err));
       cb(err);
     }
   });
 };
 
-export const getQueuedJobsByTypeAndState = (jobType: string, state: string): Promise<kue.Job[]> => {
+export const getQueuedJobsByTypeAndState = (
+  jobType: string,
+  state: string
+): Promise<kue.Job[]> => {
   return new Promise<kue.Job[]>(resolve => {
-    kue.Job.rangeByType(jobType, state, 0, 100000, 'asc', (err: Error, jobs: kue.Job[]) => {
-      resolve(jobs);
-    });
+    kue.Job.rangeByType(
+      jobType,
+      state,
+      0,
+      100000,
+      'asc',
+      (err: Error, jobs: kue.Job[]) => {
+        resolve(jobs);
+      }
+    );
   });
 };
 

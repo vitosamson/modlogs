@@ -19,39 +19,53 @@ interface UserReportJobData {
 const logger = getLogger('ReportsQueueConsumer');
 const dateFormat = 'YYYY-MM-DD';
 
-export default async function processUserReport({ request, subreddit, messageFullname }: UserReportJobData) {
+export default async function processUserReport({
+  request,
+  subreddit,
+  messageFullname,
+}: UserReportJobData) {
   const username = parseUsername(request.username);
 
   if (!username) {
-    logger.info('no username provided for user report in message %s, aborting', messageFullname);
+    logger.info(
+      `no username provided for user report in message ${messageFullname}, aborting`
+    );
     return;
   }
 
-  const report = await userReport({ username, subreddit, period: request.period });
+  const report = await userReport({
+    username,
+    subreddit,
+    period: request.period,
+  });
 
   const commentsTable = createMarkdownTable(
     ['Comment', 'Date'],
-    report.removedComments.sort((a, b) =>
-      b.timestamp - a.timestamp
-    ).map(comment => ([
-      `[${truncateContent(comment.content) || comment.link}](${comment.link})`,
-      moment(comment.timestamp).utc().format(dateFormat),
-    ]))
+    report.removedComments
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map(comment => [
+        `[${truncateContent(comment.content) || comment.link}](${
+          comment.link
+        })`,
+        moment(comment.timestamp).utc().format(dateFormat),
+      ])
   );
 
   const submissionsTable = createMarkdownTable(
     ['Submission', 'Date'],
-    report.removedSubmissions.sort((a, b) =>
-      b.timestamp - a.timestamp
-    ).map(submission => ([
-      `[${truncateContent(submission.title)}](${submission.link})`,
-      moment(submission.timestamp).utc().format(dateFormat),
-    ]))
+    report.removedSubmissions
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map(submission => [
+        `[${truncateContent(submission.title)}](${submission.link})`,
+        moment(submission.timestamp).utc().format(dateFormat),
+      ])
   );
 
   const message = `Hello,
 
-Here is the User Report you requested for /u/${username} in the past ${request.period}.
+Here is the User Report you requested for /u/${username} in the past ${
+    request.period
+  }.
 
 ### Comments
 **Total submitted:** ${report.totalCommentCount}${'  '}

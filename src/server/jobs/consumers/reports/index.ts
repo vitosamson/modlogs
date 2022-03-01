@@ -8,7 +8,8 @@ const logger = getLogger('ReportsQueueConsumer');
 
 type RequestParams = {
   type: string;
-} & TopOffendersRequestParams & UserReportRequestParams;
+} & TopOffendersRequestParams &
+  UserReportRequestParams;
 
 interface ReportJobData {
   request: RequestParams;
@@ -18,7 +19,9 @@ interface ReportJobData {
 
 export default async function processReport(data: ReportJobData) {
   const type = (data.request.type || '').trim().toLowerCase();
-  logger.info('processing %s report for %s (message %s)', type, data.subreddit, data.messageFullname);
+  logger.info(
+    `processing ${type} report for ${data.subreddit} (message ${data.messageFullname})`
+  );
   const metric = new Metric(MetricType.report, data);
 
   // TODO: send a message back if there was an error or unknown report type?
@@ -31,8 +34,8 @@ export default async function processReport(data: ReportJobData) {
       await userReport(data);
       metric.report();
     default:
-      logger.info('unknown report type', type);
+      logger.info(`unknown report type ${type}`);
       await reddit.markMessagesRead([data.messageFullname]);
-      logger.info('marked message %s as read', data.messageFullname);
+      logger.info(`marked message ${data.messageFullname} as read`);
   }
 }

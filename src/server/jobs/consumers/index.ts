@@ -14,7 +14,7 @@ import getLogger from '../../logger';
 
 const logger = getLogger('QueueListener');
 
-logger.info('adding queue processor for', fetchLogsJobType);
+logger.info(`adding queue processor for ${fetchLogsJobType}`);
 addJobProcessor({
   jobType: fetchLogsJobType,
   concurrency: 5,
@@ -28,21 +28,21 @@ addJobProcessor({
 //   processor: processLogs,
 // });
 
-logger.info('adding queue processor for', messageSubjects.report);
+logger.info(`adding queue processor for ${messageSubjects.report}`);
 addJobProcessor({
   jobType: messageSubjects.report,
   concurrency: 2,
   processor: processReports,
 });
 
-logger.info('adding queue processor for', messageSubjects.modInvite);
+logger.info(`adding queue processor for ${messageSubjects.modInvite}`);
 addJobProcessor({
   jobType: messageSubjects.modInvite,
   concurrency: 10,
   processor: processModInvite,
 });
 
-logger.info('adding queue processor for', fetchSubredditsJobType);
+logger.info(`adding queue processor for ${fetchSubredditsJobType}`);
 addJobProcessor({
   jobType: fetchSubredditsJobType,
   concurrency: 1,

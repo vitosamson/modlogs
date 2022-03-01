@@ -42,7 +42,11 @@ interface AggregateGroup {
 
 const logger = getLogger('UserReportGenerator');
 
-export default async function userReport({ username, period, subreddit }: UserReportParams): Promise<UserReport> {
+export default async function userReport({
+  username,
+  period,
+  subreddit,
+}: UserReportParams): Promise<UserReport> {
   const logsCollection = await getSubredditLogsCollection(subreddit);
   username = parseUsername(username);
 
@@ -50,7 +54,9 @@ export default async function userReport({ username, period, subreddit }: UserRe
   const { periodTimestamp, humanizedPeriod } = parsePeriod(period || '1 month');
 
   logger.info('running user report');
-  logger.info('subreddit: %s, user: %s, period: %s (%s)', subreddit, username, humanizedPeriod, periodTimestamp);
+  logger.info(
+    `subreddit: ${subreddit}, user: ${username}, period: ${humanizedPeriod} (${periodTimestamp})`
+  );
 
   const match = {
     author: authorRegex,
@@ -79,29 +85,57 @@ export default async function userReport({ username, period, subreddit }: UserRe
     },
   };
 
-  const logs = await logsCollection.aggregate<AggregatedResult>([{
-    $match: match,
-  }, {
-    $sort: {
-      timestamp: -1,
-    },
-  }, {
-    $group: group,
-  }]).toArray();
+  const logs = await logsCollection
+    .aggregate<AggregatedResult>([
+      {
+        $match: match,
+      },
+      {
+        $sort: {
+          timestamp: -1,
+        },
+      },
+      {
+        $group: group,
+      },
+    ])
+    .toArray();
 
   const removedCommentsResult = logs.find(c => c._id === 'removecomment');
-  const removedCommentCount = removedCommentsResult ? removedCommentsResult.count : 0;
-  const removedComments = (removedCommentsResult && removedCommentsResult.logs) || [];
+  const removedCommentCount = removedCommentsResult
+    ? removedCommentsResult.count
+    : 0;
+  const removedComments =
+    (removedCommentsResult && removedCommentsResult.logs) || [];
 
   const removedSubmissionResults = logs.find(c => c._id === 'removelink');
-  const removedSubmissionCount = removedSubmissionResults ? removedSubmissionResults.count : 0;
-  const removedSubmissions = (removedSubmissionResults && removedSubmissionResults.logs) || [];
+  const removedSubmissionCount = removedSubmissionResults
+    ? removedSubmissionResults.count
+    : 0;
+  const removedSubmissions =
+    (removedSubmissionResults && removedSubmissionResults.logs) || [];
 
-  const totalCommentCount = await getTotalsForUser(username, subreddit, 'comments', periodTimestamp);
-  const commentRatio = totalCommentCount > 0 ? Math.round((removedCommentCount / totalCommentCount) * 100) : 0;
+  const totalCommentCount = await getTotalsForUser(
+    username,
+    subreddit,
+    'comments',
+    periodTimestamp
+  );
+  const commentRatio =
+    totalCommentCount > 0
+      ? Math.round((removedCommentCount / totalCommentCount) * 100)
+      : 0;
 
-  const totalSubmissionCount = await getTotalsForUser(username, subreddit, 'submissions', periodTimestamp);
-  const submissionRatio = totalSubmissionCount > 0 ? Math.round((removedSubmissionCount / totalSubmissionCount) * 100) : 0;
+  const totalSubmissionCount = await getTotalsForUser(
+    username,
+    subreddit,
+    'submissions',
+    periodTimestamp
+  );
+  const submissionRatio =
+    totalSubmissionCount > 0
+      ? Math.round((removedSubmissionCount / totalSubmissionCount) * 100)
+      : 0;
 
   return {
     removedComments,
@@ -131,11 +165,17 @@ async function getTotalsForUser(
     case 'submissions':
       items = await reddit.getUserSubmissions(username);
       break;
-    default: return 0;
+    default:
+      return 0;
   }
 
-  const filteredItemsBySubreddit = items.filter(item => item.subreddit.display_name.toLowerCase() === subreddit.toLowerCase());
-  const filteredItemsByTimestamp = filteredItemsBySubreddit.filter(item => item.created * 1000 >= earliestTimestamp);
+  const filteredItemsBySubreddit = items.filter(
+    item =>
+      item.subreddit.display_name.toLowerCase() === subreddit.toLowerCase()
+  );
+  const filteredItemsByTimestamp = filteredItemsBySubreddit.filter(
+    item => item.created * 1000 >= earliestTimestamp
+  );
 
   return filteredItemsByTimestamp.length;
 }

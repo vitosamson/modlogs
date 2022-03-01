@@ -16,33 +16,38 @@ interface ProcessLogsJobData {
 
 export async function fetchLogs({ subreddit }: FetchModlogsJobData) {
   const collection = await getSubredditLogsCollection(subreddit);
-  const last: ILog = (await collection.find().sort({ _id: ID_DESCENDING }).limit(1).toArray())[0];
+  const last: ILog = (
+    await collection.find().sort({ _id: ID_DESCENDING }).limit(1).toArray()
+  )[0];
   const before = (last && last.redditId) || undefined;
 
-  logger.info('fetching logs for', subreddit);
+  logger.info(`fetching logs for ${subreddit}`);
 
   if (before) {
     logger.info(
-      '\t last log is _id: %s, redditId: %s, date: %s',
-      last._id,
-      last.redditId,
-      new Date(last.timestamp).toLocaleDateString()
+      `\t last log is _id: ${last._id}, redditId: ${
+        last.redditId
+      }, date: ${new Date(last.timestamp).toLocaleDateString()}`
     );
   } else {
-    logger.info('\t no previous logs, starting from the top (this might take a while)');
+    logger.info(
+      '\t no previous logs, starting from the top (this might take a while)'
+    );
   }
 
   try {
-    const logs = formatLogs(await reddit.getSubredditModLogs(subreddit, { before }));
+    const logs = formatLogs(
+      await reddit.getSubredditModLogs(subreddit, { before })
+    );
 
-    logger.info('got %s logs for %s', logs.length, subreddit);
+    logger.info(`got ${logs.length} logs for ${subreddit}`);
 
     return processLogs({
       subreddit,
       logs: logs.reverse(),
     });
   } catch (e) {
-    logger.error('Error fetching or processing logs: ', e);
+    logger.error(`Error fetching or processing logs: ${e}`);
   }
 
   // await addJob<ProcessLogsJobData>({
@@ -61,17 +66,19 @@ export async function processLogs({ subreddit, logs }: ProcessLogsJobData) {
   const collection = await getSubredditLogsCollection(subreddit);
 
   while (logs.length) {
-    logger.info('processing logs for %s, %s remaining', subreddit, logs.length);
+    logger.info(`processing logs for ${subreddit}, ${logs.length} remaining`);
     const group = logs.splice(0, 1000); // limit of collection.insertMany()
     await collection.insertMany(group);
   }
 
-  logger.info('finished processing logs for', subreddit);
+  logger.info(`finished processing logs for ${subreddit}`);
 }
 
 const formatLogs = (logs: ModAction[]): ILog[] => {
   return logs.map(log => {
-    const { submissionId, commentId } = reddit.getThingIdsFromLink(log.target_permalink);
+    const { submissionId, commentId } = reddit.getThingIdsFromLink(
+      log.target_permalink
+    );
     const subreddit = log.subreddit.display_name;
 
     return {

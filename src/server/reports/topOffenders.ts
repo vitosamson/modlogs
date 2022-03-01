@@ -26,7 +26,11 @@ const MAX_LIMIT = 100;
 // const MAX_PERIOD = '1 month';
 const logger = getLogger('TopOffendersReportGenerator');
 
-export default async function topOffendersReport({ subreddit, period, limit = null }: TopOffendersReportParams): Promise<TopOffendersReport> {
+export default async function topOffendersReport({
+  subreddit,
+  period,
+  limit = null,
+}: TopOffendersReportParams): Promise<TopOffendersReport> {
   limit = limit ? Math.min(limit, MAX_LIMIT) : MAX_LIMIT;
   const { periodTimestamp, humanizedPeriod } = parsePeriod(period);
   const collection = await getSubredditLogsCollection(subreddit);
@@ -34,11 +38,15 @@ export default async function topOffendersReport({ subreddit, period, limit = nu
 
   const start = Date.now();
   logger.info('generating top offenders report');
-  logger.info('subreddit: %s, period: %s (%s), limit: %s', subreddit, humanizedPeriod, periodTimestamp, limit);
+  logger.info(
+    `subreddit: ${subreddit}, period: ${humanizedPeriod} (${periodTimestamp}), limit: ${limit}`
+  );
 
   const match = {
     author: {
-      $nin: moderators.map(mod => mod.name).concat(['[deleted]', 'AutoModerator']),
+      $nin: moderators
+        .map(mod => mod.name)
+        .concat(['[deleted]', 'AutoModerator']),
     },
     action: {
       $in: ['removecomment', 'removelink'],
@@ -52,16 +60,24 @@ export default async function topOffendersReport({ subreddit, period, limit = nu
     _id: '$author',
     removedComments: {
       $sum: {
-        $cond: [{
-          $eq: ['$action', 'removecomment'],
-        }, 1, 0],
+        $cond: [
+          {
+            $eq: ['$action', 'removecomment'],
+          },
+          1,
+          0,
+        ],
       },
     },
     removedSubmissions: {
       $sum: {
-        $cond: [{
-          $eq: ['$action', 'removelink'],
-        }, 1, 0],
+        $cond: [
+          {
+            $eq: ['$action', 'removelink'],
+          },
+          1,
+          0,
+        ],
       },
     },
   };
@@ -76,22 +92,34 @@ export default async function topOffendersReport({ subreddit, period, limit = nu
     },
   };
 
-  const logs = await collection.aggregate<Offender>([{
-    $match: match,
-  }, {
-    $group: group,
-  }, {
-    $project: projection,
-  }, {
-    $sort: {
-      totalRemoved: -1,
-    },
-  }, {
-    $limit: limit,
-  }]).toArray();
+  const logs = await collection
+    .aggregate<Offender>([
+      {
+        $match: match,
+      },
+      {
+        $group: group,
+      },
+      {
+        $project: projection,
+      },
+      {
+        $sort: {
+          totalRemoved: -1,
+        },
+      },
+      {
+        $limit: limit,
+      },
+    ])
+    .toArray();
 
   const end = Date.now();
-  logger.info('finished generating top offenders report for %s in %sms', end - start);
+  logger.info(
+    `finished generating top offenders report for ${subreddit} in ${
+      end - start
+    }ms`
+  );
 
   return {
     offenders: logs,

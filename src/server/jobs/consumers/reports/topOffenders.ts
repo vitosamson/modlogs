@@ -15,18 +15,33 @@ interface TopOffendersReportJobData {
 }
 
 const logger = getLogger('ReportsQueueConsumer');
-const headerRow = ['User', 'Removed comments', 'Removed submissions', 'Total removed'];
+const headerRow = [
+  'User',
+  'Removed comments',
+  'Removed submissions',
+  'Total removed',
+];
 
-export default async function processTopOffendersReport({ request, subreddit, messageFullname}: TopOffendersReportJobData) {
+export default async function processTopOffendersReport({
+  request,
+  subreddit,
+  messageFullname,
+}: TopOffendersReportJobData) {
   const report = await generateTopOffendersReport({
     subreddit,
     limit: parseInt(request.limit, 10),
     period: request.period,
   });
 
-  const table = createMarkdownTable(headerRow, report.offenders.map(offender => (
-    [offender.username, offender.removedComments, offender.removedSubmissions, offender.totalRemoved]
-  )));
+  const table = createMarkdownTable(
+    headerRow,
+    report.offenders.map(offender => [
+      offender.username,
+      offender.removedComments,
+      offender.removedSubmissions,
+      offender.totalRemoved,
+    ])
+  );
 
   const message = `Hello,
 
@@ -40,5 +55,5 @@ ${table}`;
     content: message,
   });
 
-  logger.info('finished processing top offenders report for %s', subreddit);
+  logger.info(`finished processing top offenders report for ${subreddit}`);
 }

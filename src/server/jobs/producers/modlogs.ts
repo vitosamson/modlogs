@@ -24,24 +24,26 @@ export const run = async () => {
   const queuedJobs = await getQueuedJobsByType(jobType);
 
   try {
-    await Promise.all(mySubreddits.map(subredditName => {
-      // avoid adding duplicate jobs
-      if (queuedJobs.some(job => job.data.subreddit === subredditName)) {
-        logger.info('duplicate %s job for %s', jobType, subredditName);
-        return;
-      }
+    await Promise.all(
+      mySubreddits.map(subredditName => {
+        // avoid adding duplicate jobs
+        if (queuedJobs.some(job => job.data.subreddit === subredditName)) {
+          logger.info(`duplicate ${jobType} job for ${subredditName}`);
+          return;
+        }
 
-      logger.info('adding %s job for %s', jobType, subredditName);
+        logger.info(`adding ${jobType} job for ${subredditName}`);
 
-      return addJob<FetchModlogsJobData>({
-        jobType,
-        data: {
-          subreddit: subredditName,
-        },
-      });
-    }));
+        return addJob<FetchModlogsJobData>({
+          jobType,
+          data: {
+            subreddit: subredditName,
+          },
+        });
+      })
+    );
   } catch (err) {
-    logger.error('error adding %s job', jobType);
+    logger.error(`error adding ${jobType} job`);
     logger.error(inspect(err));
   } finally {
     await flushPendingMetrics();

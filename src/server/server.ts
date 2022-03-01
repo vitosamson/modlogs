@@ -57,7 +57,7 @@ app.use(
     await connectDb(DBNames.logs);
     await connectDb(DBNames.internal);
     app.listen(port, () => {
-      logger.info('NODE_ENV:', process.env.NODE_ENV || 'development');
+      logger.info(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`listening at http://localhost:${port}`);
     });
   } catch (err) {
