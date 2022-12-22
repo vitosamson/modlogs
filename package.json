@@ -8,7 +8,7 @@
     "dompurify": "^2.2.2",
     "js-yaml": "^3.14.0",
     "jsdom": "^16.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "kue": "^0.11.5",
     "marked": "^1.2.5",
     "moment": "^2.29.1",
